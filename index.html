@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De JS a Backend</title>
+<meta name="description" content="Laboratorio interactivo en parejas: arrow functions, async/await, el DOM, sincronía y bases de datos (local y nube).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#ff6633; --accent-d:#e0480f; --navy:#000930;
+  --bg:#eef1f6; --surface:#fff; --surface-2:#f4f6fb; --line:#dfe3ec;
+  --fg:#1b2231; --muted:#6b7385; --ok:#128a5b; --ok-bg:#e4f6ee; --warn:#b4600a; --warn-bg:#fdf0dd;
+  --code-bg:#0d1526; --code-fg:#e6ebf7; --kw:#ff9166; --str:#8fe3c8; --com:#7b84a6;
+  --display:"Fredoka",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#080b13;--surface:#121826;--surface-2:#0d1320;--line:#242c3d;--fg:#e7ebf5;--muted:#98a1b6;
+  --ok:#3ecf8e;--ok-bg:#10241c;--warn:#e0a44a;--warn-bg:#241b0f;--code-bg:#0a1120;color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#080b13;--surface:#121826;--surface-2:#0d1320;--line:#242c3d;--fg:#e7ebf5;--muted:#98a1b6;
+  --ok:#3ecf8e;--ok-bg:#10241c;--warn:#e0a44a;--warn-bg:#241b0f;--code-bg:#0a1120;color-scheme:dark;}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.5}
+button{font-family:inherit}
+.app{display:grid;grid-template-rows:auto auto 1fr;height:100%}
+/* top */
+.top{display:flex;align-items:center;gap:12px;padding:11px 18px;background:var(--surface);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:19px;color:var(--navy);display:flex;align-items:center;gap:9px}
+:root[data-theme="dark"] .brand{color:#fff}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand{color:#fff}}
+.brand .dot{width:14px;height:14px;border-radius:4px;background:var(--accent)}
+.brand small{font-family:var(--body);font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.top .sp{flex:1}
+.tbtn{border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:9px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.tbtn:hover{border-color:var(--accent)}
+.tbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* pair bar */
+.pair{display:flex;align-items:center;gap:10px;padding:9px 18px;background:var(--navy);color:#fff;flex-wrap:wrap;font-size:14px}
+.pair b{color:var(--accent)}
+.pair input{border:0;border-radius:7px;padding:5px 9px;font-size:13px;width:120px;background:rgba(255,255,255,.12);color:#fff}
+.pair input::placeholder{color:#b9c0d6}
+.pair .role{background:rgba(255,255,255,.1);padding:5px 10px;border-radius:20px;font-weight:600}
+.pair button{border:0;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}
+.pair .sp{flex:1}
+/* body */
+.main{display:grid;grid-template-columns:230px 1fr;min-height:0;overflow:hidden}
+.side{background:var(--surface);border-right:1px solid var(--line);overflow:auto;padding:10px}
+.lv{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;color:var(--fg);padding:9px 10px;border-radius:9px;cursor:pointer;font-size:14px}
+.lv:hover{background:var(--surface-2)}
+.lv.active{background:var(--accent);color:#fff;font-weight:600}
+.lv .ic{font-size:17px;width:22px;text-align:center}
+.play{overflow:auto;padding:22px;min-width:0;max-width:980px;margin:0 auto;width:100%}
+h2.title{font-family:var(--display);font-weight:700;font-size:25px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 16px;font-size:15px}
+.block{margin:18px 0}
+.block h3{font-family:var(--display);font-size:18px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card.accent{border-left:4px solid var(--accent)}
+.card p{margin:8px 0}
+.card code,p code,li code{font-family:var(--mono);background:var(--surface-2);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.88em}
+b.k{color:var(--accent-d)}
+.callout{border-radius:10px;padding:12px 15px;font-size:14.5px;margin:12px 0}
+.callout.tip{background:var(--ok-bg);border:1px solid var(--line)}
+.callout.warn{background:var(--warn-bg);border:1px solid var(--line)}
+.callout.task{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--navy)}
+.callout .lbl{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-d);display:block;margin-bottom:4px}
+/* runnable snippet */
+.snip{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:12px 0;background:var(--code-bg)}
+.snip textarea{width:100%;border:0;outline:0;padding:13px 15px;font-family:var(--mono);font-size:13px;line-height:1.55;
+  background:var(--code-bg);color:var(--code-fg);resize:vertical;tab-size:2;display:block}
+.snipbar{display:flex;gap:8px;align-items:center;padding:8px 12px;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.08)}
+.snipbar .run{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:7px 15px;font-weight:700;cursor:pointer;font-size:13px}
+.snipbar .run:hover{background:var(--accent-d)}
+.snipbar .mini{background:transparent;color:#aab;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer}
+.snipbar .hintc{color:#8b93ab;font-size:12px}
+pre.out{margin:0;padding:12px 15px;font-family:var(--mono);font-size:12.5px;line-height:1.5;white-space:pre-wrap;
+  background:#060a14;color:#cdd6ee;border-top:1px solid rgba(255,255,255,.08);min-height:20px;max-height:260px;overflow:auto}
+pre.out.err{color:#ff9d9d}
+pre.show{margin:12px 0;padding:14px 16px;border-radius:12px;background:var(--code-bg);color:var(--code-fg);
+  font-family:var(--mono);font-size:12.5px;line-height:1.55;white-space:pre-wrap;overflow:auto;border:1px solid var(--line)}
+pre.show .kw{color:var(--kw)}pre.show .str{color:var(--str)}pre.show .com{color:var(--com)}
+/* interactive demo widgets */
+.demo{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.demo .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.demo button{border:0;border-radius:9px;padding:9px 15px;font-weight:700;cursor:pointer;font-size:14px;background:var(--surface-2);color:var(--fg);border:1px solid var(--line)}
+.demo button.p{background:var(--accent);color:#fff;border-color:var(--accent)}
+.demo button:hover{border-color:var(--accent)}
+.demo .screen{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:8px;min-height:44px;font-size:15px}
+.demo .screen.ok{outline:2px solid var(--ok)}
+.demo .screen.bad{outline:2px solid var(--accent-d)}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line)}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 10px}
+.nav2 button{border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:15px}
+.nav2 .prev{background:var(--surface);border:1px solid var(--line);color:var(--fg)}
+.nav2 .next{background:var(--accent);color:#fff}
+.nav2 button:disabled{opacity:.4;cursor:not-allowed}
+ul{margin:8px 0;padding-left:22px}li{margin:5px 0}
+.foot{color:var(--muted);font-size:12px;text-align:center;padding:14px 0}
+@media (max-width:820px){.main{grid-template-columns:1fr;overflow:auto}.side{display:flex;gap:6px;overflow:auto;border-right:0;border-bottom:1px solid var(--line)}.side .lv{white-space:nowrap}.side .lv span.txt{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="brand"><span class="dot"></span>De JS a Backend <small id="brandsub">Sistemas Web · USJ</small></div>
+    <div class="sp"></div>
+    <button class="tbtn" id="es">ES</button>
+    <button class="tbtn" id="en">EN</button>
+    <button class="tbtn" id="theme">◐</button>
+  </div>
+  <div class="pair">
+    <span id="pairLead"></span>
+    <span class="role">🧑‍✈️ <span id="pLabel"></span>: <input id="pilot" placeholder="nombre"></span>
+    <span class="role">🧭 <span id="cLabel"></span>: <input id="copilot" placeholder="nombre"></span>
+    <button id="swap">🔄 <span id="swapLabel"></span></button>
+    <span class="sp"></span>
+    <span id="pairTip" style="font-size:12.5px;color:#b9c0d6"></span>
+  </div>
+  <div class="main">
+    <nav class="side" id="side"></nav>
+    <section class="play" id="play"></section>
+  </div>
+</div>
+<script>
+"use strict";
+// ---------------- i18n ----------------
+const T={
+  es:{sub:"Sistemas Web · USJ",pilot:"Piloto",copilot:"Copiloto",swap:"Cambiar roles",
+    lead:"En parejas:",pairtip:"Un teclado. El piloto escribe, el copiloto guía. Cambiad en cada 🔄.",
+    run:"▶ Ejecutar",reset:"↺ Reiniciar",clear:"Limpiar",prev:"◀ Anterior",next:"Siguiente ▶",
+    task:"Reto en pareja",discuss:"Para debatir",tip:"Idea clave",warn:"Ojo",
+    codenote:"El código va en inglés (convención); las explicaciones, en tu idioma."},
+  en:{sub:"Web Systems · USJ",pilot:"Driver",copilot:"Navigator",swap:"Swap roles",
+    lead:"In pairs:",pairtip:"One keyboard. The driver types, the navigator guides. Swap on every 🔄.",
+    run:"▶ Run",reset:"↺ Reset",clear:"Clear",prev:"◀ Back",next:"Next ▶",
+    task:"Pair challenge",discuss:"Discuss",tip:"Key idea",warn:"Watch out",
+    codenote:"Code stays in English (convention); explanations in your language."}
+};
+let lang=(localStorage.getItem("jsbackLang")||"es");
+const t=k=>T[lang][k];
+
+// ---------------- helpers DOM ----------------
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function h(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+function fmt(x){if(typeof x==="string")return x;if(x===undefined)return"undefined";try{return JSON.stringify(x);}catch(e){return String(x);}}
+
+// ---------------- JS runner ----------------
+function runJS(code,outEl,helpers){
+  outEl.textContent="";outEl.classList.remove("err");
+  const t0=performance.now();
+  const log=(...a)=>{outEl.textContent+=a.map(fmt).join(" ")+"\n";};
+  const logT=(...a)=>{const ms=Math.round(performance.now()-t0);outEl.textContent+="["+ms+" ms] "+a.map(fmt).join(" ")+"\n";};
+  console.log=log;
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const extra=helpers?helpers():{};
+  const names=["log","logT","sleep",...Object.keys(extra)];
+  const vals=[log,logT,sleep,...Object.values(extra)];
+  try{
+    const fn=new Function(...names,'"use strict";return (async()=>{\n'+code+'\n})();');
+    Promise.resolve(fn(...vals)).catch(e=>{outEl.textContent+="⛔ "+e+"\n";outEl.classList.add("err");});
+  }catch(e){outEl.textContent="⛔ "+e;outEl.classList.add("err");}
+}
+// editable, runnable snippet
+function snip(code,opts){
+  opts=opts||{};
+  const box=h("div","snip");
+  const ta=h("textarea");ta.value=code.trim();ta.spellcheck=false;
+  ta.rows=Math.min(18,code.trim().split("\n").length+1);
+  ta.addEventListener("keydown",e=>{if(e.key==="Tab"){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.slice(0,s)+"  "+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+2;}});
+  const bar=h("div","snipbar");
+  const run=h("button","run",t("run"));
+  const reset=h("button","mini",t("reset"));
+  const out=h("pre","out");
+  run.onclick=()=>runJS(ta.value,out,opts.helpers);
+  reset.onclick=()=>{ta.value=code.trim();out.textContent="";};
+  bar.append(run,reset);
+  if(opts.hint){const hc=h("span","hintc",opts.hint[lang]||opts.hint);bar.append(hc);}
+  box.append(ta,bar,out);
+  if(opts.autorun)setTimeout(()=>run.onclick(),60);
+  return box;
+}
+function showCode(code){const p=h("pre","show");p.textContent=code.trim();return p;}
+
+// ---------------- content blocks ----------------
+function card(htmlEs,htmlEn){return h("div","card accent",lang==="es"?htmlEs:htmlEn);}
+function callout(kind,htmlEs,htmlEn){const lbl=kind==="task"?t("task"):kind==="warn"?t("warn"):kind==="discuss"?t("discuss"):t("tip");
+  const c=h("div","callout "+(kind==="discuss"?"tip":kind));c.innerHTML='<span class="lbl">'+lbl+'</span>'+(lang==="es"?htmlEs:htmlEn);return c;}
+function head(es,en){return h("h3",null,lang==="es"?es:en);}
+
+// ---------------- stations ----------------
+const STATIONS=[
+ {id:"home",ic:"🚦",name:{es:"Inicio · en parejas",en:"Start · in pairs"},build:mHome},
+ {id:"arrow",ic:"➡️",name:{es:"Arrow functions",en:"Arrow functions"},build:mArrow},
+ {id:"async",ic:"⏳",name:{es:"async / await",en:"async / await"},build:mAsync},
+ {id:"dom",ic:"🌳",name:{es:"El DOM",en:"The DOM"},build:mDom},
+ {id:"sync",ic:"⚡",name:{es:"Sincronía en el DOM",en:"DOM sync problems"},build:mSync},
+ {id:"localdb",ic:"💾",name:{es:"BBDD local (IndexedDB)",en:"Local DB (IndexedDB)"},build:mLocal},
+ {id:"cloud",ic:"☁️",name:{es:"BBDD en la nube",en:"Cloud DB"},build:mCloud},
+];
+let cur=0;
+
+// ---- HOME ----
+function mHome(p){
+  p.append(h("h2","title",lang==="es"?"De JavaScript a Backend":"From JavaScript to Backend"));
+  p.append(h("p","sub",lang==="es"
+    ?"Un laboratorio para hacer en clase, en parejas, con código que se ejecuta de verdad."
+    :"A hands-on class lab, in pairs, with code that really runs."));
+  p.append(card(
+    `<p><b class="k">Cómo funciona.</b> Seis estaciones, de las arrow functions hasta conectar con una base de datos. En cada una: una explicación corta, <b>código que ejecutáis y editáis</b>, y un reto en pareja.</p>
+     <p>${t("codenote")}</p>`,
+    `<p><b class="k">How it works.</b> Six stations, from arrow functions to talking to a database. Each has a short explanation, <b>code you run and edit</b>, and a pair challenge.</p>
+     <p>${t("codenote")}</p>`));
+  p.append(callout("tip",
+    `<b>Programación en pareja.</b> Un solo teclado. El <b>Piloto</b> escribe; el <b>Copiloto</b> lee, piensa en voz alta y detecta fallos. Cuando veáis 🔄, <b>cambiad de rol</b> (botón arriba). Así programan los equipos de verdad.`,
+    `<b>Pair programming.</b> One keyboard. The <b>Driver</b> types; the <b>Navigator</b> reads, thinks out loud and catches bugs. When you see 🔄, <b>swap roles</b> (button on top). This is how real teams work.`));
+  p.append(callout("task",
+    `Escribid vuestros nombres arriba (Piloto / Copiloto) y pulsad <b>Ejecutar</b> en este primer trozo de código. Si veis el saludo, ¡listos!`,
+    `Type your names on top (Driver / Navigator) and press <b>Run</b> on this first snippet. If you see the greeting, you're ready!`));
+  p.append(snip(`const saludar = (nombre) => "¡Hola, " + nombre + "! 👋";
+log( saludar("clase") );`,{autorun:true}));
+}
+
+// ---- ARROW ----
+function mArrow(p){
+  p.append(h("h2","title","Arrow functions"));
+  p.append(h("p","sub",lang==="es"?"Una forma más corta de escribir funciones — y un cambio importante en el this.":"A shorter way to write functions — and an important change to this."));
+  p.append(card(
+    `<p>Una <b>arrow function</b> es una función escrita de forma compacta con <code>=&gt;</code>. Hace lo mismo que una función normal, pero se lee en una línea.</p>`,
+    `<p>An <b>arrow function</b> is a function written compactly with <code>=&gt;</code>. It does the same as a normal function, but reads in one line.</p>`));
+  p.append(showCode(`// la misma función, de tres maneras
+function doble(n){ return n * 2; }        // clásica
+const doble2 = function(n){ return n*2; } // anónima
+const doble3 = n => n * 2;                 // arrow (¡sin return ni llaves!)`));
+  p.append(head("Ejecútalo y edítalo","Run it and edit it"));
+  p.append(snip(`const doble  = n => n * 2;
+const suma   = (a, b) => a + b;
+const saluda = () => "hola";       // sin parámetros: ()
+log( doble(5) );     // 10
+log( suma(3, 4) );   // 7
+log( saluda() );`,{autorun:true}));
+  p.append(callout("task",
+    `Añadid una arrow function <code>area</code> que reciba base y altura y devuelva <code>base*altura/2</code>. Haced <code>log(area(10,4))</code> → debería dar 20. 🔄 Cambiad de piloto.`,
+    `Add an arrow function <code>area</code> taking base and height, returning <code>base*height/2</code>. Call <code>log(area(10,4))</code> → should print 20. 🔄 Swap driver.`));
+  p.append(snip(`// escribe aquí tu arrow function 'area'
+
+log( /* area(10,4) */ );`));
+  p.append(head("El detalle que importa: this","The detail that matters: this"));
+  p.append(card(
+    `<p>La diferencia real no es la longitud: es el <code>this</code>. Una función normal crea su propio <code>this</code>; una arrow <b>hereda el de alrededor</b>. Esto evita un bug clásico con temporizadores y eventos.</p>`,
+    `<p>The real difference isn't length: it's <code>this</code>. A normal function makes its own <code>this</code>; an arrow <b>inherits the surrounding one</b>. This avoids a classic bug with timers and events.</p>`));
+  p.append(snip(`const contador = {
+  cuenta: 0,
+  // arrow: 'this' sigue siendo 'contador' dentro del setTimeout
+  arrancar(){
+    setTimeout(() => { this.cuenta++; log("arrow → cuenta =", this.cuenta); }, 100);
+  }
+};
+contador.arrancar();`,{autorun:true,hint:{es:"Con una función normal dentro del setTimeout, this.cuenta daría NaN.",en:"With a normal function inside setTimeout, this.cuenta would be NaN."}}));
+  p.append(callout("discuss",
+    `¿Por qué creéis que las arrow functions se usan tanto dentro de <code>.map()</code>, <code>.filter()</code> y callbacks? Probad: <code>[1,2,3].map(n =&gt; n*10)</code>.`,
+    `Why do you think arrow functions are so common inside <code>.map()</code>, <code>.filter()</code> and callbacks? Try: <code>[1,2,3].map(n =&gt; n*10)</code>.`));
+}
+
+// ---- ASYNC ----
+function mAsync(p){
+  p.append(h("h2","title","async / await"));
+  p.append(h("p","sub",lang==="es"?"Esperar a que algo lento termine, sin congelar la página.":"Wait for something slow to finish, without freezing the page."));
+  p.append(card(
+    `<p>Muchas cosas <b>tardan</b>: pedir datos a un servidor, leer una base de datos. No podemos parar la página mientras tanto. <code>async/await</code> permite <b>esperar</b> un resultado de forma que se lee como código normal, de arriba abajo.</p>
+     <p>La pieza clave es la <b>promesa</b> (Promise): "te prometo un valor… más tarde". <code>await</code> espera a que esa promesa se cumpla.</p>`,
+    `<p>Many things are <b>slow</b>: asking a server for data, reading a database. We can't freeze the page meanwhile. <code>async/await</code> lets you <b>wait</b> for a result while the code reads top-to-bottom like normal.</p>
+     <p>The key piece is the <b>Promise</b>: "I promise you a value… later". <code>await</code> waits for that promise to resolve.</p>`));
+  p.append(head("Mira el tiempo pasar","Watch the time pass"));
+  p.append(card(`<p>${lang==="es"?"<code>sleep(ms)</code> ya está disponible aquí: devuelve una promesa que se cumple tras <code>ms</code> milisegundos. Cada línea muestra el tiempo transcurrido.":"<code>sleep(ms)</code> is available here: returns a promise that resolves after <code>ms</code> ms. Each line shows elapsed time."}</p>`,``));
+  p.append(snip(`logT("empiezo");
+await sleep(1000);          // espera 1 segundo
+logT("pasó 1 segundo");
+await sleep(500);
+logT("y medio más");`,{autorun:true}));
+  p.append(head("Secuencial vs en paralelo","Sequential vs parallel"));
+  p.append(card(
+    `<p>Si dos tareas lentas <b>no dependen</b> una de otra, esperarlas en fila es perder tiempo. <code>Promise.all</code> las lanza a la vez. Ejecuta las dos y compara los tiempos.</p>`,
+    `<p>If two slow tasks <b>don't depend</b> on each other, awaiting them in a row wastes time. <code>Promise.all</code> fires them together. Run both and compare the times.</p>`));
+  p.append(snip(`// SECUENCIAL: una detrás de otra  → ~2 s
+logT("inicio");
+await sleep(1000);  logT("tarea A lista");
+await sleep(1000);  logT("tarea B lista");
+logT("FIN secuencial");`,{hint:{es:"≈ 2000 ms",en:"≈ 2000 ms"}}));
+  p.append(snip(`// EN PARALELO: las dos a la vez  → ~1 s
+logT("inicio");
+await Promise.all([ sleep(1000), sleep(1000) ]);
+logT("FIN en paralelo");`,{hint:{es:"≈ 1000 ms",en:"≈ 1000 ms"}}));
+  p.append(head("Las tres formas (misma tarea)","Three styles (same task)"));
+  p.append(card(
+    `<p>"Pedir un usuario y luego sus mensajes." Antes se hacía con <b>callbacks</b> (anidados, difíciles), luego con <b>.then()</b>, y hoy con <b>async/await</b> (el más legible).</p>`,
+    `<p>"Fetch a user, then their posts." It used to be <b>callbacks</b> (nested, hard), then <b>.then()</b>, and today <b>async/await</b> (the most readable).</p>`));
+  p.append(snip(`// async/await — se lee como una receta
+async function cargar(){
+  const user  = await getUser();      // espera el usuario
+  const posts = await getPosts(user); // luego sus mensajes
+  return user.name + " tiene " + posts + " mensajes";
+}
+log( await cargar() );`,{autorun:true,helpers:()=>({
+    getUser:()=>new Promise(r=>setTimeout(()=>r({name:"Ada"}),600)),
+    getPosts:(u)=>new Promise(r=>setTimeout(()=>r(3),600))
+  })}));
+  p.append(callout("warn",
+    `Casi todo fallo con <code>fetch</code> empieza por olvidar el <code>await</code>: trabajáis con la <b>promesa</b> en vez de con el <b>dato</b>. Si veis <code>[object Promise]</code>, falta un <code>await</code>.`,
+    `Almost every <code>fetch</code> bug starts by forgetting <code>await</code>: you work with the <b>promise</b> instead of the <b>value</b>. If you see <code>[object Promise]</code>, an <code>await</code> is missing.`));
+  p.append(callout("task",
+    `En el bloque de "tres formas", quitad el <code>await</code> de <code>getUser()</code> y ejecutad. ¿Qué imprime ahora <code>user.name</code>? Volvedlo a poner. 🔄 Cambiad de piloto.`,
+    `In the "three styles" block, remove the <code>await</code> from <code>getUser()</code> and run. What does <code>user.name</code> print now? Put it back. 🔄 Swap driver.`));
+}
+
+// ---- DOM ----
+let domSandboxId=0;
+function mDom(p){
+  p.append(h("h2","title",lang==="es"?"El DOM":"The DOM"));
+  p.append(h("p","sub",lang==="es"?"La página, vista por JavaScript: un árbol de elementos que puedes leer y cambiar en vivo.":"The page, as JavaScript sees it: a tree of elements you can read and change live."));
+  p.append(card(
+    `<p>Cuando el navegador lee tu HTML, construye el <b>DOM</b> (Document Object Model): un <b>árbol</b> de objetos, uno por etiqueta. JavaScript no toca el archivo HTML — toca ese árbol en memoria, y la pantalla se actualiza sola.</p>
+     <ul><li><code>document.querySelector(".clase")</code> — encuentra un elemento</li>
+     <li><code>el.textContent = "…"</code> — cambia su texto</li>
+     <li><code>el.style.color = "red"</code> — cambia su estilo</li>
+     <li><code>el.append(nuevo)</code> — añade un hijo</li></ul>`,
+    `<p>When the browser reads your HTML, it builds the <b>DOM</b> (Document Object Model): a <b>tree</b> of objects, one per tag. JavaScript doesn't touch the HTML file — it touches that in-memory tree, and the screen updates by itself.</p>
+     <ul><li><code>document.querySelector(".class")</code> — find an element</li>
+     <li><code>el.textContent = "…"</code> — change its text</li>
+     <li><code>el.style.color = "red"</code> — change its style</li>
+     <li><code>el.append(child)</code> — add a child</li></ul>`));
+  p.append(head("DOM en vivo","Live DOM"));
+  p.append(card(`<p>${lang==="es"?"Este recuadro es un DOM real. En el código tienes <code>root</code> (el recuadro). Cámbialo y mira el efecto arriba.":"This box is a real DOM. Your code has <code>root</code> (the box). Change it and watch the effect above."}</p>`,``));
+  const sandbox=h("div","screen");sandbox.style.cssText="background:#fff;color:#111;border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0";
+  sandbox.innerHTML=`<h4 style="margin:0 0 6px">Lista de tareas</h4><ul class="todo"><li>Aprender el DOM</li><li>Repasar async</li></ul>`;
+  const resetSandbox=()=>{sandbox.innerHTML=`<h4 style="margin:0 0 6px">Lista de tareas</h4><ul class="todo"><li>Aprender el DOM</li><li>Repasar async</li></ul>`;};
+  p.append(sandbox);
+  p.append(snip(`// 'root' es el recuadro de arriba
+const titulo = root.querySelector("h4");
+titulo.textContent = "¡Mi lista!";
+titulo.style.color = "#ff6633";
+
+const li = document.createElement("li");   // crear
+li.textContent = "Tarea nueva ✨";
+root.querySelector(".todo").append(li);     // añadir al árbol
+log("la lista tiene", root.querySelectorAll("li").length, "elementos");`,
+    {autorun:true,helpers:()=>{resetSandbox();return {root:sandbox};}}));
+  p.append(callout("task",
+    `Haced que la <b>primera</b> tarea aparezca tachada: <code>root.querySelector("li").style.textDecoration = "line-through"</code>. Luego añadid otra tarea más. 🔄 Cambiad de piloto.`,
+    `Make the <b>first</b> task strikethrough: <code>root.querySelector("li").style.textDecoration = "line-through"</code>. Then add one more task. 🔄 Swap driver.`));
+  p.append(callout("discuss",
+    `El HTML de verdad nunca cambió — solo el árbol en memoria. ¿Qué pasa si recargáis la página? ¿Por qué? (pista: la próxima estación guarda datos para que NO se pierdan).`,
+    `The real HTML never changed — only the in-memory tree. What happens if you reload? Why? (hint: the next-but-one station saves data so it ISN'T lost).`));
+}
+
+// ---- SYNC ----
+function mSync(p){
+  p.append(h("h2","title",lang==="es"?"Problemas de sincronía en el DOM":"DOM synchronisation problems"));
+  p.append(h("p","sub",lang==="es"?"Lo que llega tarde, en desorden o antes de tiempo — y cómo se rompe la pantalla.":"Things arriving late, out of order, or too early — and how the screen breaks."));
+  p.append(card(
+    `<p>El DOM se pinta al instante, pero los datos llegan <b>cuando llegan</b>. Esa diferencia de tiempo es la causa de los bugs más confusos del front-end. Vamos a provocarlos — y a arreglarlos.</p>`,
+    `<p>The DOM paints instantly, but data arrives <b>whenever it arrives</b>. That time gap is the cause of the most confusing front-end bugs. Let's trigger them — and fix them.</p>`));
+
+  // DEMO A: race / out of order
+  p.append(head(lang==="es"?"Bug 1 · Respuestas en desorden":"Bug 1 · Out-of-order responses"));
+  p.append(card(
+    `<p>Imaginad un buscador. Escribís "A" (la respuesta tarda 1,5 s) y enseguida "B" (tarda 0,4 s). B contesta primero… pero la respuesta vieja de A llega después y <b>pisa</b> la de B. La pantalla muestra lo que ya NO buscáis.</p>
+     <p><b>Probadlo:</b> pulsad <b>Buscar A</b> y, rápido, <b>Buscar B</b>. Mirad el resultado final.</p>`,
+    `<p>Picture a search box. You type "A" (answer takes 1.5 s) then quickly "B" (takes 0.4 s). B answers first… but A's old answer arrives later and <b>overwrites</b> B's. The screen shows what you're NO longer searching for.</p>
+     <p><b>Try it:</b> click <b>Search A</b> and quickly <b>Search B</b>. Watch the final result.</p>`));
+  const dA=h("div","demo");
+  const scrA=h("div","screen","—");
+  let seq=0,fixA=false;
+  function searchA(name,delay){
+    const my=++seq; scrA.className="screen"; scrA.textContent=(lang==="es"?"buscando… ":"searching… ")+name;
+    setTimeout(()=>{
+      if(fixA && my!==seq){ return; }  // el arreglo: ignora respuestas que ya no son la última
+      scrA.textContent=(lang==="es"?"Resultado mostrado: ":"Shown result: ")+name;
+      scrA.className="screen "+(name.startsWith("B")?"ok":"bad");
+    },delay);
+  }
+  const bA=h("button","p","🔎 Buscar A (1,8 s)"),bB=h("button","p","🔎 Buscar B (0,4 s)");
+  const sim=h("button","p",lang==="es"?"▶ Simular (A y luego B)":"▶ Simulate (A then B)");
+  bA.onclick=()=>searchA("A (lento)",1800);bB.onclick=()=>searchA("B (rápido)",400);
+  sim.onclick=()=>{searchA("A (lento)",1800);setTimeout(()=>searchA("B (rápido)",400),250);};
+  const fixChk=h("label",null,'<input type="checkbox"> '+(lang==="es"?"Arreglar (ignorar respuestas viejas)":"Fix (ignore stale responses)"));
+  fixChk.style.cssText="display:flex;gap:7px;align-items:center;font-size:14px";
+  fixChk.querySelector("input").onchange=e=>fixA=e.target.checked;
+  const rowA=h("div","row");rowA.append(sim,bA,bB);const rowA2=h("div","row");rowA2.append(fixChk);
+  dA.append(rowA,rowA2,scrA);p.append(dA);
+  p.append(callout("tip",
+    `Sin arreglo acaba mostrando <b>A</b> (rojo): la respuesta vieja pisó la nueva. Con el arreglo, cada búsqueda lleva un número; al llegar, si ya no es la última, <b>se descarta</b>. Prueba con la casilla marcada: siempre gana <b>B</b> (verde).`,
+    `Without the fix it ends showing <b>A</b> (red): the old answer overwrote the new one. With the fix, each search carries a number; on arrival, if it's no longer the latest, it's <b>dropped</b>. Try with the box checked: <b>B</b> always wins (green).`));
+  p.append(showCode(`let ultima = 0;
+function buscar(texto){
+  const miId = ++ultima;                 // cada petición, un número
+  pantalla.textContent = "buscando…";
+  pedirAlServidor(texto).then(res => {
+    if (miId !== ultima) return;         // ← llegó tarde y ya no es la última: descartar
+    pantalla.textContent = res;          // solo pinta la respuesta MÁS reciente
+  });
+}`));
+
+  // DEMO B: update before data
+  p.append(head(lang==="es"?"Bug 2 · Pintar antes de tener el dato":"Bug 2 · Painting before the data arrives"));
+  p.append(card(
+    `<p>Otro clásico: lanzáis la petición y pintáis <b>en la línea siguiente</b>, sin esperar. El dato aún no está → sale <code>undefined</code> o vacío. La solución: mostrar <b>"Cargando…"</b> y pintar <b>dentro</b> del <code>await</code>/<code>.then()</code>.</p>`,
+    `<p>Another classic: you fire the request and paint <b>on the next line</b>, without waiting. The data isn't there yet → you get <code>undefined</code> or blank. The fix: show <b>"Loading…"</b> and paint <b>inside</b> the <code>await</code>/<code>.then()</code>.</p>`));
+  const dB=h("div","demo");const scrB=h("div","screen","—");
+  const getUser=()=>new Promise(r=>setTimeout(()=>r({name:"Ada Lovelace"}),900));
+  const bBad=h("button",null,lang==="es"?"❌ Cargar (mal)":"❌ Load (wrong)");
+  const bGood=h("button","p",lang==="es"?"✅ Cargar (bien)":"✅ Load (right)");
+  bBad.onclick=()=>{let user;getUser().then(u=>user=u);scrB.className="screen bad";scrB.textContent="Nombre: "+(user&&user.name);};
+  bGood.onclick=async()=>{scrB.className="screen";scrB.textContent=lang==="es"?"Cargando…":"Loading…";const u=await getUser();scrB.className="screen ok";scrB.textContent="Nombre: "+u.name;};
+  const rowB=h("div","row");rowB.append(bBad,bGood);dB.append(rowB,scrB);p.append(dB);
+  p.append(callout("warn",
+    `"Mal" muestra <code>Nombre: undefined</code>: pintó antes de que la promesa se cumpliera. "Bien" muestra <b>Cargando…</b> y luego el nombre. Esos tres estados — <b>cargando / dato / error</b> — hay que diseñarlos SIEMPRE.`,
+    `"Wrong" shows <code>Name: undefined</code>: it painted before the promise resolved. "Right" shows <b>Loading…</b> then the name. Those three states — <b>loading / data / error</b> — must ALWAYS be designed.`));
+  p.append(callout("task",
+    `Discutid y anotad: ¿qué tercer estado falta en el botón "bien"? (pista: ¿y si el servidor falla?). ¿Cómo lo mostraríais? 🔄 Cambiad de piloto.`,
+    `Discuss and note: what third state is missing in the "right" button? (hint: what if the server fails?). How would you show it? 🔄 Swap driver.`));
+}
+
+// ---- LOCAL DB ----
+function mLocal(p){
+  p.append(h("h2","title",lang==="es"?"Base de datos local · IndexedDB":"Local database · IndexedDB"));
+  p.append(h("p","sub",lang==="es"?"Guardar datos en el propio navegador — que sobrevivan al recargar.":"Store data in the browser itself — surviving a reload."));
+  p.append(card(
+    `<p>El navegador trae su propia base de datos: <b>IndexedDB</b>. Vive en <b>este</b> equipo y navegador, no necesita servidor, y <b>persiste</b> aunque cierres la pestaña. Perfecta para borradores, ajustes o modo sin conexión.</p>
+     <p>Abajo hay una mini-app de notas <b>real</b>, guardada en IndexedDB. Añade notas y <b>recarga la página</b>: siguen ahí.</p>`,
+    `<p>The browser ships its own database: <b>IndexedDB</b>. It lives on <b>this</b> device and browser, needs no server, and <b>persists</b> even if you close the tab. Great for drafts, settings or offline mode.</p>
+     <p>Below is a <b>real</b> notes mini-app, stored in IndexedDB. Add notes and <b>reload the page</b>: they're still there.</p>`));
+  const d=h("div","demo");
+  const inp=h("input");inp.placeholder=lang==="es"?"escribe una nota…":"type a note…";
+  inp.style.cssText="flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--fg);font-size:14px";
+  const add=h("button","p",lang==="es"?"➕ Añadir":"➕ Add");
+  const clr=h("button",null,lang==="es"?"🗑️ Vaciar":"🗑️ Clear");
+  const list=h("ul");list.style.cssText="margin:10px 0 0;padding-left:20px";
+  const row=h("div","row");row.append(inp,add,clr);d.append(row,list);p.append(d);
+  let db;
+  const open=()=>new Promise((res,rej)=>{const r=indexedDB.open("notasDB",1);
+    r.onupgradeneeded=e=>{e.target.result.createObjectStore("notas",{keyPath:"id",autoIncrement:true});};
+    r.onsuccess=e=>res(e.target.result);r.onerror=e=>rej(e);});
+  const render=async()=>{list.innerHTML="";const tx=db.transaction("notas");const st=tx.objectStore("notas");
+    const all=await new Promise(r=>{const q=st.getAll();q.onsuccess=()=>r(q.result);});
+    if(!all.length){list.innerHTML="<li style='color:var(--muted);list-style:none'>"+(lang==="es"?"(sin notas — añade una y recarga)":"(no notes — add one and reload)")+"</li>";return;}
+    all.forEach(n=>{const li=h("li");li.textContent=n.texto;list.append(li);});};
+  add.onclick=async()=>{const v=inp.value.trim();if(!v)return;const tx=db.transaction("notas","readwrite");
+    tx.objectStore("notas").add({texto:v});tx.oncomplete=render;inp.value="";inp.focus();};
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter")add.onclick();});
+  clr.onclick=async()=>{const tx=db.transaction("notas","readwrite");tx.objectStore("notas").clear();tx.oncomplete=render;};
+  open().then(x=>{db=x;render();}).catch(()=>{list.innerHTML="<li>IndexedDB no disponible aquí.</li>";});
+  p.append(showCode(`// Abrir / crear la base de datos
+const req = indexedDB.open("notasDB", 1);
+req.onupgradeneeded = e => e.target.result
+    .createObjectStore("notas", { keyPath:"id", autoIncrement:true });
+
+// Guardar una nota
+const tx = db.transaction("notas", "readwrite");
+tx.objectStore("notas").add({ texto: "mi nota" });
+
+// Leerlas todas
+db.transaction("notas").objectStore("notas").getAll()
+  .onsuccess = e => render(e.target.result);`));
+  p.append(callout("discuss",
+    `IndexedDB guarda en <b>este</b> navegador. Si abres la app en tu móvil, ¿están tus notas? ¿Y si otro alumno abre la misma URL? ¿Qué limitación os sugiere eso… y qué necesitaríais para compartir datos entre dispositivos?`,
+    `IndexedDB saves in <b>this</b> browser. If you open the app on your phone, are your notes there? And if another student opens the same URL? What limitation does that suggest… and what would you need to share data across devices?`));
+}
+
+// ---- CLOUD DB ----
+function mCloud(p){
+  p.append(h("h2","title",lang==="es"?"Base de datos en la nube":"Cloud database"));
+  p.append(h("p","sub",lang==="es"?"Datos que viven en un servidor y se comparten entre todos — y por qué hace falta un backend.":"Data living on a server, shared by everyone — and why a backend is needed."));
+  p.append(card(
+    `<p>Para que los datos se compartan entre dispositivos y personas, tienen que vivir <b>en la nube</b>. La app los pide por la red con <code>fetch</code> y llegan de forma <b>asíncrona</b> (lo de la estación de async/await, ahora de verdad).</p>
+     <p>Abajo, una llamada <b>en vivo</b> a una API pública. Pulsa el botón y mira cómo llegan datos remotos — con sus estados <b>cargando / datos / error</b>.</p>`,
+    `<p>For data to be shared across devices and people, it must live <b>in the cloud</b>. The app requests it over the network with <code>fetch</code>, and it arrives <b>asynchronously</b> (the async/await station, now for real).</p>
+     <p>Below, a <b>live</b> call to a public API. Press the button and watch remote data arrive — with its <b>loading / data / error</b> states.</p>`));
+  const d=h("div","demo");const scr=h("div","screen","—");
+  const go=h("button","p",lang==="es"?"☁️ Traer usuarios de la nube":"☁️ Fetch users from the cloud");
+  go.onclick=async()=>{scr.className="screen";scr.innerHTML=lang==="es"?"⏳ Cargando…":"⏳ Loading…";
+    try{
+      const res=await fetch("https://jsonplaceholder.typicode.com/users");
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      const users=await res.json();
+      scr.className="screen ok";
+      scr.innerHTML="<b>"+users.length+(lang==="es"?" usuarios recibidos:</b><br>":" users received:</b><br>")+
+        users.slice(0,5).map(u=>"• "+u.name+" — "+u.email).join("<br>")+"<br>…";
+    }catch(e){scr.className="screen bad";scr.innerHTML="⛔ "+(lang==="es"?"Error de red: ":"Network error: ")+e.message;}
+  };
+  d.append(h("div","row",null),scr);d.querySelector(".row").append(go);p.append(d);
+  p.append(showCode(`async function traerUsuarios(){
+  pantalla.textContent = "Cargando…";                  // estado 1
+  try {
+    const res = await fetch("https://.../users");       // pedir a la nube
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const users = await res.json();                     // estado 2: datos
+    pintar(users);
+  } catch (e) {
+    pantalla.textContent = "Error: " + e.message;        // estado 3: error
+  }
+}`));
+  p.append(head(lang==="es"?"¿Y una base de datos de verdad? El patrón Supabase":"A real database? The Supabase pattern"));
+  p.append(card(
+    `<p>Servicios como <b>Supabase</b> o <b>Firebase</b> te dan una base de datos en la nube con un cliente para el navegador. Se usa casi igual que lo de arriba:</p>`,
+    `<p>Services like <b>Supabase</b> or <b>Firebase</b> give you a cloud database with a browser client. It's used almost like above:</p>`));
+  p.append(showCode(`import { createClient } from "@supabase/supabase-js";
+
+// URL pública + 'anon key' (clave PÚBLICA, pensada para el navegador)
+const db = createClient("https://TU-PROYECTO.supabase.co", "ANON_KEY_PUBLICA");
+
+// Leer filas de una tabla
+const { data } = await db.from("notas").select("*");
+
+// Insertar una fila
+await db.from("notas").insert({ texto: "hola nube" });`));
+  p.append(callout("warn",
+    `<b>La verdad importante:</b> una página web <b>no puede</b> guardar la contraseña secreta de la base de datos — cualquiera vería el código. Por eso la <code>anon key</code> es <b>pública</b> y limitada, y la seguridad real la pone el servidor (reglas por filas, o un <b>backend</b> propio). <b>Esto es exactamente lo que vais a construir a continuación.</b>`,
+    `<b>The key truth:</b> a web page <b>can't</b> hold the database's secret password — anyone could read the code. That's why the <code>anon key</code> is <b>public</b> and limited, and real security lives on the server (row-level rules, or your own <b>backend</b>). <b>This is exactly what you'll build next.</b>`));
+  p.append(callout("task",
+    `Comparad las tres estaciones de datos: el <b>DOM</b> (se pierde al recargar), <b>IndexedDB</b> (local, persiste pero no se comparte) y la <b>nube</b> (compartida, necesita servidor/reglas). Haced una tabla de 3 columnas: ¿cuándo usaríais cada una? 🔄 Último cambio de piloto.`,
+    `Compare the three data stations: the <b>DOM</b> (lost on reload), <b>IndexedDB</b> (local, persists but not shared) and the <b>cloud</b> (shared, needs server/rules). Make a 3-column table: when would you use each? 🔄 Final driver swap.`));
+}
+
+// ---------------- render / nav ----------------
+function buildSide(){
+  const side=$("#side");side.innerHTML="";
+  STATIONS.forEach((s,i)=>{const b=h("button","lv"+(i===cur?" active":""));
+    b.innerHTML='<span class="ic">'+s.ic+'</span><span class="txt">'+s.name[lang]+'</span>';
+    b.onclick=()=>go(i);side.append(b);});
+}
+function go(i){cur=Math.max(0,Math.min(STATIONS.length-1,i));localStorage.setItem("jsbackStation",cur);render();}
+function render(){
+  buildSide();
+  const play=$("#play");play.innerHTML="";play.scrollTop=0;
+  STATIONS[cur].build(play);
+  const nav=h("div","nav2");
+  const prev=h("button","prev",t("prev")),next=h("button","next",t("next"));
+  prev.disabled=cur===0;next.disabled=cur===STATIONS.length-1;
+  prev.onclick=()=>go(cur-1);next.onclick=()=>go(cur+1);
+  nav.append(prev,next);play.append(nav);
+  play.append(h("div","foot","De JS a Backend · Sistemas Web · Universidad San Jorge"));
+  // pair bar labels
+  $("#pairLead").textContent=t("lead");$("#pLabel").textContent=t("pilot");$("#cLabel").textContent=t("copilot");
+  $("#swapLabel").textContent=t("swap");$("#pairTip").textContent=t("pairtip");$("#brandsub").textContent=t("sub");
+  $("#es").classList.toggle("on",lang==="es");$("#en").classList.toggle("on",lang==="en");
+  document.documentElement.lang=lang;
+}
+// language
+function setLang(l){lang=l;localStorage.setItem("jsbackLang",l);render();}
+$("#es").onclick=()=>setLang("es");$("#en").onclick=()=>setLang("en");
+// theme
+const root=document.documentElement;
+try{const th=localStorage.getItem("jsbackTheme");if(th)root.setAttribute("data-theme",th);}catch(e){}
+$("#theme").onclick=()=>{const d=root.getAttribute("data-theme")==="dark"||(!root.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme:dark)").matches);
+  const n=d?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("jsbackTheme",n);}catch(e){}};
+// pair names + swap
+const pilot=$("#pilot"),copilot=$("#copilot");
+try{pilot.value=localStorage.getItem("jsbackPilot")||"";copilot.value=localStorage.getItem("jsbackCopilot")||"";}catch(e){}
+pilot.oninput=()=>localStorage.setItem("jsbackPilot",pilot.value);
+copilot.oninput=()=>localStorage.setItem("jsbackCopilot",copilot.value);
+$("#swap").onclick=()=>{const a=pilot.value;pilot.value=copilot.value;copilot.value=a;pilot.oninput();copilot.oninput();
+  $("#swap").textContent="🔄 ✓";setTimeout(()=>$("#swap").innerHTML='🔄 <span id="swapLabel">'+t("swap")+'</span>',700);};
+// start
+try{cur=+localStorage.getItem("jsbackStation")||0;}catch(e){}
+render();
+</script>
+</body>
+</html>
