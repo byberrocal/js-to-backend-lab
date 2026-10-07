@@ -4,18 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>De JS a Backend</title>
-<meta name="description" content="Laboratorio interactivo en parejas: arrow functions, async/await, el DOM, sincronía y bases de datos (local y nube).">
+<meta name="description" content="Laboratorio gamificado en parejas: arrow functions, async/await, el DOM, sincronía y bases de datos (local y nube).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --accent:#ff6633; --accent-d:#e0480f; --navy:#000930;
-  --bg:#eef1f6; --surface:#fff; --surface-2:#f4f6fb; --line:#dfe3ec;
-  --fg:#1b2231; --muted:#6b7385; --ok:#128a5b; --ok-bg:#e4f6ee; --warn:#b4600a; --warn-bg:#fdf0dd;
-  --code-bg:#0d1526; --code-fg:#e6ebf7; --kw:#ff9166; --str:#8fe3c8; --com:#7b84a6;
-  --display:"Fredoka",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace; color-scheme:light;
+  --accent:#ff6633;--accent-d:#e0480f;--navy:#000930;
+  --bg:#eef1f6;--surface:#fff;--surface-2:#f4f6fb;--line:#dfe3ec;
+  --fg:#1b2231;--muted:#6b7385;--ok:#128a5b;--ok-bg:#e4f6ee;--warn:#b4600a;--warn-bg:#fdf0dd;
+  --code-bg:#0d1526;--code-fg:#e6ebf7;
+  --display:"Fredoka",system-ui,sans-serif;--body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#080b13;--surface:#121826;--surface-2:#0d1320;--line:#242c3d;--fg:#e7ebf5;--muted:#98a1b6;
@@ -27,7 +27,6 @@
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.5}
 button{font-family:inherit}
 .app{display:grid;grid-template-rows:auto auto 1fr;height:100%}
-/* top */
 .top{display:flex;align-items:center;gap:12px;padding:11px 18px;background:var(--surface);border-bottom:1px solid var(--line);flex-wrap:wrap}
 .brand{font-family:var(--display);font-weight:700;font-size:19px;color:var(--navy);display:flex;align-items:center;gap:9px}
 :root[data-theme="dark"] .brand{color:#fff}
@@ -35,84 +34,102 @@ button{font-family:inherit}
 .brand .dot{width:14px;height:14px;border-radius:4px;background:var(--accent)}
 .brand small{font-family:var(--body);font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
 .top .sp{flex:1}
-.tbtn{border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:9px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer}
-.tbtn:hover{border-color:var(--accent)}
-.tbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-/* pair bar */
+.stars{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:var(--fg)}
+.stars .bar{width:120px;height:9px;border-radius:6px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.stars .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .4s}
+.tbtn{border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:9px;padding:7px 11px;font-size:13px;font-weight:600;cursor:pointer}
+.tbtn:hover{border-color:var(--accent)}.tbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .pair{display:flex;align-items:center;gap:10px;padding:9px 18px;background:var(--navy);color:#fff;flex-wrap:wrap;font-size:14px}
-.pair b{color:var(--accent)}
-.pair input{border:0;border-radius:7px;padding:5px 9px;font-size:13px;width:120px;background:rgba(255,255,255,.12);color:#fff}
-.pair input::placeholder{color:#b9c0d6}
 .pair .role{background:rgba(255,255,255,.1);padding:5px 10px;border-radius:20px;font-weight:600}
+.pair input{border:0;border-radius:7px;padding:5px 9px;font-size:13px;width:110px;background:rgba(255,255,255,.12);color:#fff}
+.pair input::placeholder{color:#b9c0d6}
 .pair button{border:0;border-radius:8px;padding:6px 12px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}
-.pair .sp{flex:1}
-/* body */
-.main{display:grid;grid-template-columns:230px 1fr;min-height:0;overflow:hidden}
+.pair .sp{flex:1}.pair .tip{font-size:12.5px;color:#b9c0d6}
+.main{display:grid;grid-template-columns:234px 1fr;min-height:0;overflow:hidden}
 .side{background:var(--surface);border-right:1px solid var(--line);overflow:auto;padding:10px}
 .lv{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;color:var(--fg);padding:9px 10px;border-radius:9px;cursor:pointer;font-size:14px}
-.lv:hover{background:var(--surface-2)}
-.lv.active{background:var(--accent);color:#fff;font-weight:600}
-.lv .ic{font-size:17px;width:22px;text-align:center}
-.play{overflow:auto;padding:22px;min-width:0;max-width:980px;margin:0 auto;width:100%}
+.lv:hover{background:var(--surface-2)}.lv.active{background:var(--accent);color:#fff;font-weight:600}
+.lv .ic{font-size:17px;width:22px;text-align:center}.lv .st{margin-left:auto;font-size:12px;color:var(--muted)}
+.lv.active .st{color:#fff}.lv.done .st{color:var(--ok);font-weight:700}.lv.active.done .st{color:#fff}
+.play{overflow:auto;padding:22px;min-width:0;max-width:900px;margin:0 auto;width:100%}
 h2.title{font-family:var(--display);font-weight:700;font-size:25px;margin:0 0 4px}
-.sub{color:var(--muted);margin:0 0 16px;font-size:15px}
-.block{margin:18px 0}
-.block h3{font-family:var(--display);font-size:18px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
-.card.accent{border-left:4px solid var(--accent)}
-.card p{margin:8px 0}
-.card code,p code,li code{font-family:var(--mono);background:var(--surface-2);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.88em}
-b.k{color:var(--accent-d)}
-.callout{border-radius:10px;padding:12px 15px;font-size:14.5px;margin:12px 0}
-.callout.tip{background:var(--ok-bg);border:1px solid var(--line)}
-.callout.warn{background:var(--warn-bg);border:1px solid var(--line)}
-.callout.task{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--navy)}
-.callout .lbl{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-d);display:block;margin-bottom:4px}
-/* runnable snippet */
-.snip{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:12px 0;background:var(--code-bg)}
-.snip textarea{width:100%;border:0;outline:0;padding:13px 15px;font-family:var(--mono);font-size:13px;line-height:1.55;
-  background:var(--code-bg);color:var(--code-fg);resize:vertical;tab-size:2;display:block}
-.snipbar{display:flex;gap:8px;align-items:center;padding:8px 12px;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.08)}
-.snipbar .run{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:7px 15px;font-weight:700;cursor:pointer;font-size:13px}
-.snipbar .run:hover{background:var(--accent-d)}
-.snipbar .mini{background:transparent;color:#aab;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer}
-.snipbar .hintc{color:#8b93ab;font-size:12px}
-pre.out{margin:0;padding:12px 15px;font-family:var(--mono);font-size:12.5px;line-height:1.5;white-space:pre-wrap;
-  background:#060a14;color:#cdd6ee;border-top:1px solid rgba(255,255,255,.08);min-height:20px;max-height:260px;overflow:auto}
+.sub{color:var(--muted);margin:0 0 14px;font-size:15px}
+.intro{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:15px 17px;font-size:15px;margin:14px 0}
+.intro p{margin:7px 0}.intro b{color:var(--accent-d)}
+.intro code,.goal code,.ex code,.quiz code,p code{font-family:var(--mono);background:var(--surface-2);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.88em}
+h3.step{font-family:var(--display);font-size:16px;margin:22px 0 8px;display:flex;align-items:center;gap:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+/* example (ya hecho) */
+.ex{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:10px 0;background:var(--surface)}
+.ex .cap{padding:9px 14px;font-size:13.5px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.ex .cap b{color:var(--accent-d)}
+/* snippet (editor) */
+.snip{background:var(--code-bg)}
+.snip textarea{width:100%;border:0;outline:0;padding:12px 15px;font-family:var(--mono);font-size:13px;line-height:1.55;background:var(--code-bg);color:var(--code-fg);resize:vertical;tab-size:2;display:block}
+.snipbar{display:flex;gap:8px;align-items:center;padding:8px 12px;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.08);flex-wrap:wrap}
+.runbtn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer;font-size:13.5px}
+.runbtn:hover{background:var(--accent-d)}
+.mini{background:transparent;color:#9aa3bd;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:6px 11px;font-size:12px;cursor:pointer}
+.hintc{color:#9aa3bd;font-size:12px;margin-left:auto}
+pre.out{margin:0;padding:11px 15px;font-family:var(--mono);font-size:12.5px;line-height:1.5;white-space:pre-wrap;background:#060a14;color:#cdd6ee;border-top:1px solid rgba(255,255,255,.08);min-height:16px;max-height:220px;overflow:auto}
 pre.out.err{color:#ff9d9d}
-pre.show{margin:12px 0;padding:14px 16px;border-radius:12px;background:var(--code-bg);color:var(--code-fg);
-  font-family:var(--mono);font-size:12.5px;line-height:1.55;white-space:pre-wrap;overflow:auto;border:1px solid var(--line)}
-pre.show .kw{color:var(--kw)}pre.show .str{color:var(--str)}pre.show .com{color:var(--com)}
-/* interactive demo widgets */
+pre.show{margin:10px 0;padding:13px 15px;border-radius:12px;background:var(--code-bg);color:var(--code-fg);font-family:var(--mono);font-size:12.5px;line-height:1.55;white-space:pre-wrap;overflow:auto;border:1px solid var(--line)}
+/* mission */
+.mission{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:14px 0;background:var(--surface);box-shadow:0 1px 0 var(--line)}
+.mission.done{border-color:var(--ok)}
+.goal{display:flex;gap:10px;align-items:flex-start;padding:14px 16px}
+.goal .badge{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.mission.done .goal .badge{background:var(--ok)}
+.goal .g{font-size:15px}.goal .g b{color:var(--accent-d)}
+.goal .star{margin-left:auto;font-size:19px;filter:grayscale(1);opacity:.35}
+.mission.done .goal .star{filter:none;opacity:1}
+.fb{padding:10px 16px;font-size:14px;font-weight:600;border-top:1px solid var(--line)}
+.fb.ok{color:var(--ok);background:var(--ok-bg)}.fb.no{color:var(--accent-d);background:var(--warn-bg)}
+/* quiz */
+.quiz{border:1px solid var(--line);border-radius:14px;padding:15px 17px;margin:14px 0;background:var(--surface)}
+.quiz.done{border-color:var(--ok)}
+.quiz .q{font-size:15px;font-weight:600;margin-bottom:10px;display:flex;gap:10px}
+.quiz .q .badge{flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+.quiz.done .q .badge{background:var(--ok)}
+.qopt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:10px;padding:11px 14px;margin:7px 0;cursor:pointer;font-size:14.5px}
+.qopt:hover{border-color:var(--accent)}
+.qopt.good{border-color:var(--ok);background:var(--ok-bg);color:var(--ok);font-weight:700}
+.qopt.bad{border-color:var(--accent-d);background:var(--warn-bg)}
+.qexp{margin-top:8px;font-size:14px;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 13px}
+/* interactive demos */
 .demo{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
 .demo .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
 .demo button{border:0;border-radius:9px;padding:9px 15px;font-weight:700;cursor:pointer;font-size:14px;background:var(--surface-2);color:var(--fg);border:1px solid var(--line)}
-.demo button.p{background:var(--accent);color:#fff;border-color:var(--accent)}
-.demo button:hover{border-color:var(--accent)}
+.demo button.p{background:var(--accent);color:#fff;border-color:var(--accent)}.demo button:hover{border-color:var(--accent)}
 .demo .screen{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:8px;min-height:44px;font-size:15px}
-.demo .screen.ok{outline:2px solid var(--ok)}
-.demo .screen.bad{outline:2px solid var(--accent-d)}
-.pill{display:inline-block;font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--surface-2);border:1px solid var(--line)}
-.pill.ok{background:var(--ok-bg);color:var(--ok)}
-.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 10px}
+.demo .screen.ok{outline:2px solid var(--ok)}.demo .screen.bad{outline:2px solid var(--accent-d)}
+.callout{border-radius:10px;padding:11px 15px;font-size:14.5px;margin:12px 0}
+.callout.tip{background:var(--ok-bg);border:1px solid var(--line)}
+.callout.warn{background:var(--warn-bg);border:1px solid var(--line)}
+.callout .lbl{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--accent-d);display:block;margin-bottom:3px}
+.swapline{background:var(--navy);color:#fff;border-radius:10px;padding:10px 14px;font-size:14px;margin:16px 0;display:flex;gap:8px;align-items:center}
+.swapline b{color:var(--accent)}
+.nav2{display:flex;justify-content:space-between;gap:10px;margin:24px 0 10px}
 .nav2 button{border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:15px}
-.nav2 .prev{background:var(--surface);border:1px solid var(--line);color:var(--fg)}
-.nav2 .next{background:var(--accent);color:#fff}
+.nav2 .prev{background:var(--surface);border:1px solid var(--line);color:var(--fg)}.nav2 .next{background:var(--accent);color:#fff}
 .nav2 button:disabled{opacity:.4;cursor:not-allowed}
-ul{margin:8px 0;padding-left:22px}li{margin:5px 0}
+ul{margin:7px 0;padding-left:22px}li{margin:4px 0}
 .foot{color:var(--muted);font-size:12px;text-align:center;padding:14px 0}
-@media (max-width:820px){.main{grid-template-columns:1fr;overflow:auto}.side{display:flex;gap:6px;overflow:auto;border-right:0;border-bottom:1px solid var(--line)}.side .lv{white-space:nowrap}.side .lv span.txt{display:none}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--ok);color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(0,0,0,.2);transition:.3s;pointer-events:none;z-index:50}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.cft{position:fixed;top:-20px;font-size:20px;pointer-events:none;z-index:60;animation:fall 1.1s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(260deg);opacity:0}}
+@media (max-width:820px){.main{grid-template-columns:1fr;overflow:auto}.side{display:flex;gap:6px;overflow:auto;border-right:0;border-bottom:1px solid var(--line)}.side .lv{white-space:nowrap}.side .lv .txt{display:none}.side .lv .st{margin-left:4px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.cft{display:none}}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="top">
-    <div class="brand"><span class="dot"></span>De JS a Backend <small id="brandsub">Sistemas Web · USJ</small></div>
+    <div class="brand"><span class="dot"></span>De JS a Backend <small id="brandsub"></small></div>
     <div class="sp"></div>
-    <button class="tbtn" id="es">ES</button>
-    <button class="tbtn" id="en">EN</button>
+    <div class="stars">⭐ <span id="scount">0/0</span><span class="bar"><i id="sbar"></i></span></div>
+    <button class="tbtn" id="es">ES</button><button class="tbtn" id="en">EN</button>
     <button class="tbtn" id="theme">◐</button>
   </div>
   <div class="pair">
@@ -120,454 +137,451 @@ ul{margin:8px 0;padding-left:22px}li{margin:5px 0}
     <span class="role">🧑‍✈️ <span id="pLabel"></span>: <input id="pilot" placeholder="nombre"></span>
     <span class="role">🧭 <span id="cLabel"></span>: <input id="copilot" placeholder="nombre"></span>
     <button id="swap">🔄 <span id="swapLabel"></span></button>
-    <span class="sp"></span>
-    <span id="pairTip" style="font-size:12.5px;color:#b9c0d6"></span>
+    <span class="sp"></span><span class="tip" id="pairTip"></span>
   </div>
-  <div class="main">
-    <nav class="side" id="side"></nav>
-    <section class="play" id="play"></section>
-  </div>
+  <div class="main"><nav class="side" id="side"></nav><section class="play" id="play"></section></div>
 </div>
+<div id="toast"></div>
 <script>
 "use strict";
-// ---------------- i18n ----------------
 const T={
-  es:{sub:"Sistemas Web · USJ",pilot:"Piloto",copilot:"Copiloto",swap:"Cambiar roles",
-    lead:"En parejas:",pairtip:"Un teclado. El piloto escribe, el copiloto guía. Cambiad en cada 🔄.",
-    run:"▶ Ejecutar",reset:"↺ Reiniciar",clear:"Limpiar",prev:"◀ Anterior",next:"Siguiente ▶",
-    task:"Reto en pareja",discuss:"Para debatir",tip:"Idea clave",warn:"Ojo",
-    codenote:"El código va en inglés (convención); las explicaciones, en tu idioma."},
-  en:{sub:"Web Systems · USJ",pilot:"Driver",copilot:"Navigator",swap:"Swap roles",
-    lead:"In pairs:",pairtip:"One keyboard. The driver types, the navigator guides. Swap on every 🔄.",
-    run:"▶ Run",reset:"↺ Reset",clear:"Clear",prev:"◀ Back",next:"Next ▶",
-    task:"Pair challenge",discuss:"Discuss",tip:"Key idea",warn:"Watch out",
-    codenote:"Code stays in English (convention); explanations in your language."}
-};
-let lang=(localStorage.getItem("jsbackLang")||"es");
-const t=k=>T[lang][k];
-
-// ---------------- helpers DOM ----------------
-const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+ es:{sub:"Sistemas Web · USJ",pilot:"Piloto",copilot:"Copiloto",swap:"Cambiar roles",lead:"En parejas:",
+   pairtip:"Un teclado. El piloto escribe, el copiloto guía. Cambiad en cada 🔄.",
+   run:"▶ Probar",reset:"↺ Reiniciar",prev:"◀ Anterior",next:"Siguiente ▶",
+   ok:"¡Correcto! ⭐",no:"Aún no. ",solved:"⭐ ¡Misión superada!",
+   swapmsg:"Cambio de roles: ahora teclea el otro.",seeit:"Míralo funcionar",yourturn:"Te toca",
+   mission:"Misión",quiz:"Pregunta",correct:"¡Bien! ",wrong:"Casi… prueba otra."},
+ en:{sub:"Web Systems · USJ",pilot:"Driver",copilot:"Navigator",swap:"Swap roles",lead:"In pairs:",
+   pairtip:"One keyboard. The driver types, the navigator guides. Swap on every 🔄.",
+   run:"▶ Check",reset:"↺ Reset",prev:"◀ Back",next:"Next ▶",
+   ok:"Correct! ⭐",no:"Not yet. ",solved:"⭐ Mission complete!",
+   swapmsg:"Role swap: the other one types now.",seeit:"See it run",yourturn:"Your turn",
+   mission:"Mission",quiz:"Question",correct:"Nice! ",wrong:"Almost… try another."}};
+let lang=localStorage.getItem("jsbackLang")||"es";
+const t=k=>T[lang][k], L=(es,en)=>lang==="es"?es:en;
+const $=s=>document.querySelector(s);
 function h(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
 function fmt(x){if(typeof x==="string")return x;if(x===undefined)return"undefined";try{return JSON.stringify(x);}catch(e){return String(x);}}
 
-// ---------------- JS runner ----------------
-function runJS(code,outEl,helpers){
-  outEl.textContent="";outEl.classList.remove("err");
+// progress
+let solved=new Set();try{solved=new Set(JSON.parse(localStorage.getItem("jsbackSolved")||"[]"));}catch(e){}
+const saveSolved=()=>localStorage.setItem("jsbackSolved",JSON.stringify([...solved]));
+function award(id){if(solved.has(id))return;solved.add(id);saveSolved();updateStars();confetti();toast(t("solved"));}
+function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("show");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),1500);}
+function confetti(){if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;const em=["⭐","🎉","✨","🧡"];for(let i=0;i<14;i++){const s=h("span","cft",em[i%em.length]);s.style.left=(10+Math.random()*80)+"%";s.style.animationDelay=(Math.random()*.25)+"s";document.body.append(s);setTimeout(()=>s.remove(),1300);}}
+
+// ---- JS runner ----
+function run(code,helpersFn,onDone){
+  const lines=[];let extra={};
+  const log=(...a)=>lines.push(a.map(fmt).join(" "));
   const t0=performance.now();
-  const log=(...a)=>{outEl.textContent+=a.map(fmt).join(" ")+"\n";};
-  const logT=(...a)=>{const ms=Math.round(performance.now()-t0);outEl.textContent+="["+ms+" ms] "+a.map(fmt).join(" ")+"\n";};
+  const logT=(...a)=>lines.push("["+Math.round(performance.now()-t0)+" ms] "+a.map(fmt).join(" "));
   console.log=log;
   const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-  const extra=helpers?helpers():{};
-  const names=["log","logT","sleep",...Object.keys(extra)];
-  const vals=[log,logT,sleep,...Object.values(extra)];
+  try{extra=helpersFn?helpersFn():{};}catch(e){}
+  const names=["log","logT","sleep",...Object.keys(extra)],vals=[log,logT,sleep,...Object.values(extra)];
   try{
     const fn=new Function(...names,'"use strict";return (async()=>{\n'+code+'\n})();');
-    Promise.resolve(fn(...vals)).catch(e=>{outEl.textContent+="⛔ "+e+"\n";outEl.classList.add("err");});
-  }catch(e){outEl.textContent="⛔ "+e;outEl.classList.add("err");}
+    Promise.resolve(fn(...vals)).then(()=>onDone(lines,null,extra),e=>onDone(lines,e,extra));
+  }catch(e){onDone(lines,e,extra);}
 }
-// editable, runnable snippet
-function snip(code,opts){
-  opts=opts||{};
-  const box=h("div","snip");
-  const ta=h("textarea");ta.value=code.trim();ta.spellcheck=false;
-  ta.rows=Math.min(18,code.trim().split("\n").length+1);
-  ta.addEventListener("keydown",e=>{if(e.key==="Tab"){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.slice(0,s)+"  "+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+2;}});
-  const bar=h("div","snipbar");
-  const run=h("button","run",t("run"));
-  const reset=h("button","mini",t("reset"));
-  const out=h("pre","out");
-  run.onclick=()=>runJS(ta.value,out,opts.helpers);
-  reset.onclick=()=>{ta.value=code.trim();out.textContent="";};
-  bar.append(run,reset);
-  if(opts.hint){const hc=h("span","hintc",opts.hint[lang]||opts.hint);bar.append(hc);}
-  box.append(ta,bar,out);
-  if(opts.autorun)setTimeout(()=>run.onclick(),60);
-  return box;
-}
-function showCode(code){const p=h("pre","show");p.textContent=code.trim();return p;}
+const maxMs=lines=>{let m=0;lines.forEach(l=>{const g=/\[(\d+) ms\]/.exec(l);if(g)m=Math.max(m,+g[1]);});return m;};
+const joined=lines=>lines.join("\n");
 
-// ---------------- content blocks ----------------
-function card(htmlEs,htmlEn){return h("div","card accent",lang==="es"?htmlEs:htmlEn);}
-function callout(kind,htmlEs,htmlEn){const lbl=kind==="task"?t("task"):kind==="warn"?t("warn"):kind==="discuss"?t("discuss"):t("tip");
-  const c=h("div","callout "+(kind==="discuss"?"tip":kind));c.innerHTML='<span class="lbl">'+lbl+'</span>'+(lang==="es"?htmlEs:htmlEn);return c;}
-function head(es,en){return h("h3",null,lang==="es"?es:en);}
+// ---- components ----
+function example(code,capEs,capEn,helpersFn){
+  const box=h("div","ex");
+  box.append(h("div","cap","<b>"+t("seeit")+".</b> "+L(capEs,capEn)));
+  const sn=h("div","snip");const ta=h("textarea");ta.value=code.trim();ta.spellcheck=false;ta.rows=Math.min(16,code.trim().split("\n").length+1);
+  tab(ta);const bar=h("div","snipbar");const rb=h("button","runbtn",t("run"));const out=h("pre","out");
+  rb.onclick=()=>{out.textContent="…";out.classList.remove("err");run(ta.value,helpersFn,(ls,err)=>{out.textContent=joined(ls)||"(sin salida)";if(err){out.textContent+="\n⛔ "+err;out.classList.add("err");}});};
+  bar.append(rb);sn.append(ta,bar,out);box.append(sn);setTimeout(()=>rb.onclick(),80);return box;
+}
+function mission(o){ // {id,n,goalEs,goalEn,code,helpersFn,check,hintEs,hintEn}
+  const box=h("div","mission"+(solved.has(o.id)?" done":""));
+  const goal=h("div","goal");
+  goal.append(h("div","badge",o.n),h("div","g","<b>"+t("mission")+" "+o.n+".</b> "+L(o.goalEs,o.goalEn)),h("div","star","⭐"));
+  box.append(goal);
+  const sn=h("div","snip");const ta=h("textarea");ta.value=o.code.trim();ta.spellcheck=false;ta.rows=Math.min(16,o.code.trim().split("\n").length+1);
+  tab(ta);const bar=h("div","snipbar");const rb=h("button","runbtn",t("run"));const rs=h("button","mini",t("reset"));const out=h("pre","out");
+  const fb=h("div","fb");fb.hidden=true;
+  rb.onclick=()=>{out.textContent="…";out.classList.remove("err");
+    run(ta.value,o.helpersFn,(ls,err,ctx)=>{
+      out.textContent=joined(ls)||"(sin salida)";if(err){out.textContent+="\n⛔ "+err;out.classList.add("err");}
+      let res=false;try{res=o.check(ls,Object.assign({err},ctx));}catch(e){res=false;}
+      fb.hidden=false;
+      if(res){fb.className="fb ok";fb.textContent=t("ok");box.classList.add("done");award(o.id);}
+      else{fb.className="fb no";fb.textContent=t("no")+L(o.hintEs,o.hintEn);}
+    });};
+  rs.onclick=()=>{ta.value=o.code.trim();out.textContent="";fb.hidden=true;};
+  bar.append(rb,rs);sn.append(ta,bar,out);box.append(sn,fb);return box;
+}
+function quiz(o){ // {id,n,qEs,qEn,opts:[{es,en}],correct,expEs,expEn}
+  const box=h("div","quiz"+(solved.has(o.id)?" done":""));
+  const q=h("div","q");q.append(h("div","badge","?"),h("div",null,"<b>"+t("quiz")+" "+o.n+".</b> "+L(o.qEs,o.qEn)));
+  box.append(q);const exp=h("div","qexp");exp.hidden=true;exp.innerHTML=L(o.expEs,o.expEn);
+  o.opts.forEach((op,i)=>{const b=h("button","qopt",L(op.es,op.en));
+    b.onclick=()=>{if(i===o.correct){b.className="qopt good";box.classList.add("done");exp.hidden=false;award(o.id);
+        [...box.querySelectorAll(".qopt")].forEach(x=>x.disabled=true);}
+      else{b.className="qopt bad";toast(t("wrong"));setTimeout(()=>b.className="qopt",700);}};
+    box.append(b);});
+  box.append(exp);return box;
+}
+function tab(ta){ta.addEventListener("keydown",e=>{if(e.key==="Tab"){e.preventDefault();const s=ta.selectionStart;ta.value=ta.value.slice(0,s)+"  "+ta.value.slice(ta.selectionEnd);ta.selectionStart=ta.selectionEnd=s+2;}});}
+function intro(es,en){return h("div","intro",L(es,en));}
+function step(es,en){return h("h3","step",L(es,en));}
+function showCode(c){const p=h("pre","show");p.textContent=c.trim();return p;}
+function swapline(){return h("div","swapline","🔄 <b>"+t("swap")+".</b> "+t("swapmsg"));}
+function callout(kind,es,en){const c=h("div","callout "+kind);c.innerHTML='<span class="lbl">'+(kind==="warn"?L("Ojo","Watch out"):L("Idea clave","Key idea"))+"</span>"+L(es,en);return c;}
 
 // ---------------- stations ----------------
-const STATIONS=[
- {id:"home",ic:"🚦",name:{es:"Inicio · en parejas",en:"Start · in pairs"},build:mHome},
- {id:"arrow",ic:"➡️",name:{es:"Arrow functions",en:"Arrow functions"},build:mArrow},
- {id:"async",ic:"⏳",name:{es:"async / await",en:"async / await"},build:mAsync},
- {id:"dom",ic:"🌳",name:{es:"El DOM",en:"The DOM"},build:mDom},
- {id:"sync",ic:"⚡",name:{es:"Sincronía en el DOM",en:"DOM sync problems"},build:mSync},
- {id:"localdb",ic:"💾",name:{es:"BBDD local (IndexedDB)",en:"Local DB (IndexedDB)"},build:mLocal},
- {id:"cloud",ic:"☁️",name:{es:"BBDD en la nube",en:"Cloud DB"},build:mCloud},
+const ST=[
+ {id:"home",ic:"🚦",name:{es:"Inicio",en:"Start"},build:sHome,stars:[]},
+ {id:"arrow",ic:"➡️",name:{es:"Arrow functions",en:"Arrow functions"},build:sArrow,stars:["arrow-1","arrow-2","arrow-3"]},
+ {id:"async",ic:"⏳",name:{es:"async / await",en:"async / await"},build:sAsync,stars:["async-1","async-2","async-3"]},
+ {id:"dom",ic:"🌳",name:{es:"El DOM",en:"The DOM"},build:sDom,stars:["dom-1","dom-2","dom-3"]},
+ {id:"sync",ic:"⚡",name:{es:"Sincronía",en:"Sync bugs"},build:sSync,stars:["sync-1","sync-2"]},
+ {id:"local",ic:"💾",name:{es:"BBDD local",en:"Local DB"},build:sLocal,stars:["local-1","local-2"]},
+ {id:"cloud",ic:"☁️",name:{es:"BBDD nube",en:"Cloud DB"},build:sCloud,stars:["cloud-1","cloud-2"]},
 ];
+const ALL=ST.flatMap(s=>s.stars);
 let cur=0;
 
-// ---- HOME ----
-function mHome(p){
-  p.append(h("h2","title",lang==="es"?"De JavaScript a Backend":"From JavaScript to Backend"));
-  p.append(h("p","sub",lang==="es"
-    ?"Un laboratorio para hacer en clase, en parejas, con código que se ejecuta de verdad."
-    :"A hands-on class lab, in pairs, with code that really runs."));
-  p.append(card(
-    `<p><b class="k">Cómo funciona.</b> Seis estaciones, de las arrow functions hasta conectar con una base de datos. En cada una: una explicación corta, <b>código que ejecutáis y editáis</b>, y un reto en pareja.</p>
-     <p>${t("codenote")}</p>`,
-    `<p><b class="k">How it works.</b> Six stations, from arrow functions to talking to a database. Each has a short explanation, <b>code you run and edit</b>, and a pair challenge.</p>
-     <p>${t("codenote")}</p>`));
+function sHome(p){
+  p.append(h("h2","title",L("De JavaScript a Backend","From JavaScript to Backend")));
+  p.append(h("p","sub",L("Un juego para clase, en parejas. Completa misiones y gana ⭐.","A class game, in pairs. Complete missions and earn ⭐.")));
+  p.append(intro(
+   `<p><b>Cómo se juega.</b> Cada tema tiene <b>misiones</b>: te decimos <b>qué hacer</b>, escribes un trozo de código y pulsas <b>${t("run")}</b>. Si está bien, ganas una ⭐.</p>
+    <p>También hay <b>preguntas</b> rápidas y <b>demos</b> para pulsar y mirar. El código va en inglés; las explicaciones, en tu idioma.</p>`,
+   `<p><b>How to play.</b> Each topic has <b>missions</b>: we tell you <b>what to do</b>, you write a bit of code and press <b>${t("run")}</b>. If it's right, you earn a ⭐.</p>
+    <p>There are also quick <b>questions</b> and <b>demos</b> to click and watch. Code is in English; explanations in your language.</p>`));
   p.append(callout("tip",
-    `<b>Programación en pareja.</b> Un solo teclado. El <b>Piloto</b> escribe; el <b>Copiloto</b> lee, piensa en voz alta y detecta fallos. Cuando veáis 🔄, <b>cambiad de rol</b> (botón arriba). Así programan los equipos de verdad.`,
-    `<b>Pair programming.</b> One keyboard. The <b>Driver</b> types; the <b>Navigator</b> reads, thinks out loud and catches bugs. When you see 🔄, <b>swap roles</b> (button on top). This is how real teams work.`));
-  p.append(callout("task",
-    `Escribid vuestros nombres arriba (Piloto / Copiloto) y pulsad <b>Ejecutar</b> en este primer trozo de código. Si veis el saludo, ¡listos!`,
-    `Type your names on top (Driver / Navigator) and press <b>Run</b> on this first snippet. If you see the greeting, you're ready!`));
-  p.append(snip(`const saludar = (nombre) => "¡Hola, " + nombre + "! 👋";
-log( saludar("clase") );`,{autorun:true}));
+   "<b>En pareja.</b> Un teclado. El <b>Piloto</b> escribe; el <b>Copiloto</b> lee y ayuda. Cuando veáis 🔄, cambiad (botón de arriba). Escribid vuestros nombres arriba.",
+   "<b>In pairs.</b> One keyboard. The <b>Driver</b> types; the <b>Navigator</b> reads and helps. On 🔄, swap (top button). Type your names on top."));
+  p.append(step("Calentamiento","Warm-up"));
+  p.append(mission({id:"home-hi",n:"0",
+   goalEs:'Pulsa <b>'+t("run")+'</b>. Debe aparecer el saludo. (¡Ya está escrito!)',
+   goalEn:'Press <b>'+t("run")+'</b>. The greeting should appear. (Already written!)',
+   code:`const saludo = "¡Hola, clase! 👋";
+log(saludo);`,
+   check:ls=>joined(ls).includes("Hola"),
+   hintEs:"Solo pulsa Probar.",hintEn:"Just press Check."}));
+  // home-hi no cuenta para estrellas de estación, pero da feedback
 }
 
-// ---- ARROW ----
-function mArrow(p){
+function sArrow(p){
   p.append(h("h2","title","Arrow functions"));
-  p.append(h("p","sub",lang==="es"?"Una forma más corta de escribir funciones — y un cambio importante en el this.":"A shorter way to write functions — and an important change to this."));
-  p.append(card(
-    `<p>Una <b>arrow function</b> es una función escrita de forma compacta con <code>=&gt;</code>. Hace lo mismo que una función normal, pero se lee en una línea.</p>`,
-    `<p>An <b>arrow function</b> is a function written compactly with <code>=&gt;</code>. It does the same as a normal function, but reads in one line.</p>`));
-  p.append(showCode(`// la misma función, de tres maneras
-function doble(n){ return n * 2; }        // clásica
-const doble2 = function(n){ return n*2; } // anónima
-const doble3 = n => n * 2;                 // arrow (¡sin return ni llaves!)`));
-  p.append(head("Ejecútalo y edítalo","Run it and edit it"));
-  p.append(snip(`const doble  = n => n * 2;
-const suma   = (a, b) => a + b;
-const saluda = () => "hola";       // sin parámetros: ()
-log( doble(5) );     // 10
-log( suma(3, 4) );   // 7
-log( saluda() );`,{autorun:true}));
-  p.append(callout("task",
-    `Añadid una arrow function <code>area</code> que reciba base y altura y devuelva <code>base*altura/2</code>. Haced <code>log(area(10,4))</code> → debería dar 20. 🔄 Cambiad de piloto.`,
-    `Add an arrow function <code>area</code> taking base and height, returning <code>base*height/2</code>. Call <code>log(area(10,4))</code> → should print 20. 🔄 Swap driver.`));
-  p.append(snip(`// escribe aquí tu arrow function 'area'
-
-log( /* area(10,4) */ );`));
-  p.append(head("El detalle que importa: this","The detail that matters: this"));
-  p.append(card(
-    `<p>La diferencia real no es la longitud: es el <code>this</code>. Una función normal crea su propio <code>this</code>; una arrow <b>hereda el de alrededor</b>. Esto evita un bug clásico con temporizadores y eventos.</p>`,
-    `<p>The real difference isn't length: it's <code>this</code>. A normal function makes its own <code>this</code>; an arrow <b>inherits the surrounding one</b>. This avoids a classic bug with timers and events.</p>`));
-  p.append(snip(`const contador = {
-  cuenta: 0,
-  // arrow: 'this' sigue siendo 'contador' dentro del setTimeout
-  arrancar(){
-    setTimeout(() => { this.cuenta++; log("arrow → cuenta =", this.cuenta); }, 100);
-  }
-};
-contador.arrancar();`,{autorun:true,hint:{es:"Con una función normal dentro del setTimeout, this.cuenta daría NaN.",en:"With a normal function inside setTimeout, this.cuenta would be NaN."}}));
-  p.append(callout("discuss",
-    `¿Por qué creéis que las arrow functions se usan tanto dentro de <code>.map()</code>, <code>.filter()</code> y callbacks? Probad: <code>[1,2,3].map(n =&gt; n*10)</code>.`,
-    `Why do you think arrow functions are so common inside <code>.map()</code>, <code>.filter()</code> and callbacks? Try: <code>[1,2,3].map(n =&gt; n*10)</code>.`));
-}
-
-// ---- ASYNC ----
-function mAsync(p){
-  p.append(h("h2","title","async / await"));
-  p.append(h("p","sub",lang==="es"?"Esperar a que algo lento termine, sin congelar la página.":"Wait for something slow to finish, without freezing the page."));
-  p.append(card(
-    `<p>Muchas cosas <b>tardan</b>: pedir datos a un servidor, leer una base de datos. No podemos parar la página mientras tanto. <code>async/await</code> permite <b>esperar</b> un resultado de forma que se lee como código normal, de arriba abajo.</p>
-     <p>La pieza clave es la <b>promesa</b> (Promise): "te prometo un valor… más tarde". <code>await</code> espera a que esa promesa se cumpla.</p>`,
-    `<p>Many things are <b>slow</b>: asking a server for data, reading a database. We can't freeze the page meanwhile. <code>async/await</code> lets you <b>wait</b> for a result while the code reads top-to-bottom like normal.</p>
-     <p>The key piece is the <b>Promise</b>: "I promise you a value… later". <code>await</code> waits for that promise to resolve.</p>`));
-  p.append(head("Mira el tiempo pasar","Watch the time pass"));
-  p.append(card(`<p>${lang==="es"?"<code>sleep(ms)</code> ya está disponible aquí: devuelve una promesa que se cumple tras <code>ms</code> milisegundos. Cada línea muestra el tiempo transcurrido.":"<code>sleep(ms)</code> is available here: returns a promise that resolves after <code>ms</code> ms. Each line shows elapsed time."}</p>`,``));
-  p.append(snip(`logT("empiezo");
-await sleep(1000);          // espera 1 segundo
-logT("pasó 1 segundo");
-await sleep(500);
-logT("y medio más");`,{autorun:true}));
-  p.append(head("Secuencial vs en paralelo","Sequential vs parallel"));
-  p.append(card(
-    `<p>Si dos tareas lentas <b>no dependen</b> una de otra, esperarlas en fila es perder tiempo. <code>Promise.all</code> las lanza a la vez. Ejecuta las dos y compara los tiempos.</p>`,
-    `<p>If two slow tasks <b>don't depend</b> on each other, awaiting them in a row wastes time. <code>Promise.all</code> fires them together. Run both and compare the times.</p>`));
-  p.append(snip(`// SECUENCIAL: una detrás de otra  → ~2 s
-logT("inicio");
-await sleep(1000);  logT("tarea A lista");
-await sleep(1000);  logT("tarea B lista");
-logT("FIN secuencial");`,{hint:{es:"≈ 2000 ms",en:"≈ 2000 ms"}}));
-  p.append(snip(`// EN PARALELO: las dos a la vez  → ~1 s
-logT("inicio");
-await Promise.all([ sleep(1000), sleep(1000) ]);
-logT("FIN en paralelo");`,{hint:{es:"≈ 1000 ms",en:"≈ 1000 ms"}}));
-  p.append(head("Las tres formas (misma tarea)","Three styles (same task)"));
-  p.append(card(
-    `<p>"Pedir un usuario y luego sus mensajes." Antes se hacía con <b>callbacks</b> (anidados, difíciles), luego con <b>.then()</b>, y hoy con <b>async/await</b> (el más legible).</p>`,
-    `<p>"Fetch a user, then their posts." It used to be <b>callbacks</b> (nested, hard), then <b>.then()</b>, and today <b>async/await</b> (the most readable).</p>`));
-  p.append(snip(`// async/await — se lee como una receta
-async function cargar(){
-  const user  = await getUser();      // espera el usuario
-  const posts = await getPosts(user); // luego sus mensajes
-  return user.name + " tiene " + posts + " mensajes";
-}
-log( await cargar() );`,{autorun:true,helpers:()=>({
-    getUser:()=>new Promise(r=>setTimeout(()=>r({name:"Ada"}),600)),
-    getPosts:(u)=>new Promise(r=>setTimeout(()=>r(3),600))
-  })}));
-  p.append(callout("warn",
-    `Casi todo fallo con <code>fetch</code> empieza por olvidar el <code>await</code>: trabajáis con la <b>promesa</b> en vez de con el <b>dato</b>. Si veis <code>[object Promise]</code>, falta un <code>await</code>.`,
-    `Almost every <code>fetch</code> bug starts by forgetting <code>await</code>: you work with the <b>promise</b> instead of the <b>value</b>. If you see <code>[object Promise]</code>, an <code>await</code> is missing.`));
-  p.append(callout("task",
-    `En el bloque de "tres formas", quitad el <code>await</code> de <code>getUser()</code> y ejecutad. ¿Qué imprime ahora <code>user.name</code>? Volvedlo a poner. 🔄 Cambiad de piloto.`,
-    `In the "three styles" block, remove the <code>await</code> from <code>getUser()</code> and run. What does <code>user.name</code> print now? Put it back. 🔄 Swap driver.`));
-}
-
-// ---- DOM ----
-let domSandboxId=0;
-function mDom(p){
-  p.append(h("h2","title",lang==="es"?"El DOM":"The DOM"));
-  p.append(h("p","sub",lang==="es"?"La página, vista por JavaScript: un árbol de elementos que puedes leer y cambiar en vivo.":"The page, as JavaScript sees it: a tree of elements you can read and change live."));
-  p.append(card(
-    `<p>Cuando el navegador lee tu HTML, construye el <b>DOM</b> (Document Object Model): un <b>árbol</b> de objetos, uno por etiqueta. JavaScript no toca el archivo HTML — toca ese árbol en memoria, y la pantalla se actualiza sola.</p>
-     <ul><li><code>document.querySelector(".clase")</code> — encuentra un elemento</li>
-     <li><code>el.textContent = "…"</code> — cambia su texto</li>
-     <li><code>el.style.color = "red"</code> — cambia su estilo</li>
-     <li><code>el.append(nuevo)</code> — añade un hijo</li></ul>`,
-    `<p>When the browser reads your HTML, it builds the <b>DOM</b> (Document Object Model): a <b>tree</b> of objects, one per tag. JavaScript doesn't touch the HTML file — it touches that in-memory tree, and the screen updates by itself.</p>
-     <ul><li><code>document.querySelector(".class")</code> — find an element</li>
-     <li><code>el.textContent = "…"</code> — change its text</li>
-     <li><code>el.style.color = "red"</code> — change its style</li>
-     <li><code>el.append(child)</code> — add a child</li></ul>`));
-  p.append(head("DOM en vivo","Live DOM"));
-  p.append(card(`<p>${lang==="es"?"Este recuadro es un DOM real. En el código tienes <code>root</code> (el recuadro). Cámbialo y mira el efecto arriba.":"This box is a real DOM. Your code has <code>root</code> (the box). Change it and watch the effect above."}</p>`,``));
-  const sandbox=h("div","screen");sandbox.style.cssText="background:#fff;color:#111;border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0";
-  sandbox.innerHTML=`<h4 style="margin:0 0 6px">Lista de tareas</h4><ul class="todo"><li>Aprender el DOM</li><li>Repasar async</li></ul>`;
-  const resetSandbox=()=>{sandbox.innerHTML=`<h4 style="margin:0 0 6px">Lista de tareas</h4><ul class="todo"><li>Aprender el DOM</li><li>Repasar async</li></ul>`;};
-  p.append(sandbox);
-  p.append(snip(`// 'root' es el recuadro de arriba
-const titulo = root.querySelector("h4");
-titulo.textContent = "¡Mi lista!";
-titulo.style.color = "#ff6633";
-
-const li = document.createElement("li");   // crear
-li.textContent = "Tarea nueva ✨";
-root.querySelector(".todo").append(li);     // añadir al árbol
-log("la lista tiene", root.querySelectorAll("li").length, "elementos");`,
-    {autorun:true,helpers:()=>{resetSandbox();return {root:sandbox};}}));
-  p.append(callout("task",
-    `Haced que la <b>primera</b> tarea aparezca tachada: <code>root.querySelector("li").style.textDecoration = "line-through"</code>. Luego añadid otra tarea más. 🔄 Cambiad de piloto.`,
-    `Make the <b>first</b> task strikethrough: <code>root.querySelector("li").style.textDecoration = "line-through"</code>. Then add one more task. 🔄 Swap driver.`));
-  p.append(callout("discuss",
-    `El HTML de verdad nunca cambió — solo el árbol en memoria. ¿Qué pasa si recargáis la página? ¿Por qué? (pista: la próxima estación guarda datos para que NO se pierdan).`,
-    `The real HTML never changed — only the in-memory tree. What happens if you reload? Why? (hint: the next-but-one station saves data so it ISN'T lost).`));
-}
-
-// ---- SYNC ----
-function mSync(p){
-  p.append(h("h2","title",lang==="es"?"Problemas de sincronía en el DOM":"DOM synchronisation problems"));
-  p.append(h("p","sub",lang==="es"?"Lo que llega tarde, en desorden o antes de tiempo — y cómo se rompe la pantalla.":"Things arriving late, out of order, or too early — and how the screen breaks."));
-  p.append(card(
-    `<p>El DOM se pinta al instante, pero los datos llegan <b>cuando llegan</b>. Esa diferencia de tiempo es la causa de los bugs más confusos del front-end. Vamos a provocarlos — y a arreglarlos.</p>`,
-    `<p>The DOM paints instantly, but data arrives <b>whenever it arrives</b>. That time gap is the cause of the most confusing front-end bugs. Let's trigger them — and fix them.</p>`));
-
-  // DEMO A: race / out of order
-  p.append(head(lang==="es"?"Bug 1 · Respuestas en desorden":"Bug 1 · Out-of-order responses"));
-  p.append(card(
-    `<p>Imaginad un buscador. Escribís "A" (la respuesta tarda 1,5 s) y enseguida "B" (tarda 0,4 s). B contesta primero… pero la respuesta vieja de A llega después y <b>pisa</b> la de B. La pantalla muestra lo que ya NO buscáis.</p>
-     <p><b>Probadlo:</b> pulsad <b>Buscar A</b> y, rápido, <b>Buscar B</b>. Mirad el resultado final.</p>`,
-    `<p>Picture a search box. You type "A" (answer takes 1.5 s) then quickly "B" (takes 0.4 s). B answers first… but A's old answer arrives later and <b>overwrites</b> B's. The screen shows what you're NO longer searching for.</p>
-     <p><b>Try it:</b> click <b>Search A</b> and quickly <b>Search B</b>. Watch the final result.</p>`));
-  const dA=h("div","demo");
-  const scrA=h("div","screen","—");
-  let seq=0,fixA=false;
-  function searchA(name,delay){
-    const my=++seq; scrA.className="screen"; scrA.textContent=(lang==="es"?"buscando… ":"searching… ")+name;
-    setTimeout(()=>{
-      if(fixA && my!==seq){ return; }  // el arreglo: ignora respuestas que ya no son la última
-      scrA.textContent=(lang==="es"?"Resultado mostrado: ":"Shown result: ")+name;
-      scrA.className="screen "+(name.startsWith("B")?"ok":"bad");
-    },delay);
-  }
-  const bA=h("button","p","🔎 Buscar A (1,8 s)"),bB=h("button","p","🔎 Buscar B (0,4 s)");
-  const sim=h("button","p",lang==="es"?"▶ Simular (A y luego B)":"▶ Simulate (A then B)");
-  bA.onclick=()=>searchA("A (lento)",1800);bB.onclick=()=>searchA("B (rápido)",400);
-  sim.onclick=()=>{searchA("A (lento)",1800);setTimeout(()=>searchA("B (rápido)",400),250);};
-  const fixChk=h("label",null,'<input type="checkbox"> '+(lang==="es"?"Arreglar (ignorar respuestas viejas)":"Fix (ignore stale responses)"));
-  fixChk.style.cssText="display:flex;gap:7px;align-items:center;font-size:14px";
-  fixChk.querySelector("input").onchange=e=>fixA=e.target.checked;
-  const rowA=h("div","row");rowA.append(sim,bA,bB);const rowA2=h("div","row");rowA2.append(fixChk);
-  dA.append(rowA,rowA2,scrA);p.append(dA);
+  p.append(h("p","sub",L("Una forma corta de escribir funciones con  =>","A short way to write functions with  =>")));
+  p.append(intro(
+   `<p>Una función normal se escribe larga. Una <b>arrow function</b> hace lo mismo pero cortita, con la flecha <code>=></code>:</p>`,
+   `<p>A normal function is long. An <b>arrow function</b> does the same but short, with the arrow <code>=></code>:</p>`));
+  p.append(showCode(`function doble(n){ return n * 2; }   //  normal
+const doble = n => n * 2;            //  arrow  (misma cosa)
+//            ▲        ▲
+//       parámetro   lo que devuelve`));
+  p.append(example(`const doble = n => n * 2;
+log( doble(5) );   // 10`,"Una arrow que multiplica por 2.","An arrow that doubles."));
+  p.append(step(t("yourturn"),t("yourturn")));
+  p.append(mission({id:"arrow-1",n:"1",
+   goalEs:"Escribe una arrow <code>triple</code> que multiplique por 3. Debe imprimir <b>30</b>.",
+   goalEn:"Write an arrow <code>triple</code> that multiplies by 3. It must print <b>30</b>.",
+   code:`const triple = /* escribe aquí: n => ... */ ;
+log( triple(10) );`,
+   check:ls=>joined(ls).trim().split("\n").pop()==="30",
+   hintEs:"Copia el patrón: <code>const triple = n => n * 3;</code>",
+   hintEn:"Copy the pattern: <code>const triple = n => n * 3;</code>"}));
+  p.append(mission({id:"arrow-2",n:"2",
+   goalEs:"Escribe <code>saluda</code> que reciba un nombre y devuelva <code>\"Hola, \" + nombre</code>. Debe imprimir <b>Hola, Ada</b>.",
+   goalEn:'Write <code>saluda</code> taking a name, returning <code>"Hola, " + name</code>. It must print <b>Hola, Ada</b>.',
+   code:`const saluda = /* nombre => ... */ ;
+log( saluda("Ada") );`,
+   check:ls=>joined(ls).includes("Hola, Ada"),
+   hintEs:"<code>const saluda = nombre => \"Hola, \" + nombre;</code>",
+   hintEn:'<code>const saluda = name => "Hola, " + name;</code>'}));
+  p.append(swapline());
+  p.append(mission({id:"arrow-3",n:"3",
+   goalEs:"Las arrows brillan dentro de <code>.map()</code>. Haz que cada número se multiplique por 10. Debe salir <b>[10,20,30]</b>.",
+   goalEn:"Arrows shine inside <code>.map()</code>. Make each number ×10. It must print <b>[10,20,30]</b>.",
+   code:`const nums = [1, 2, 3];
+const x10 = nums.map( /* n => ... */ );
+log( x10 );`,
+   check:ls=>joined(ls).replace(/\s/g,"").includes("[10,20,30]"),
+   hintEs:"Dentro de map va una arrow: <code>nums.map(n => n * 10)</code>",
+   hintEn:"Inside map goes an arrow: <code>nums.map(n => n * 10)</code>"}));
   p.append(callout("tip",
-    `Sin arreglo acaba mostrando <b>A</b> (rojo): la respuesta vieja pisó la nueva. Con el arreglo, cada búsqueda lleva un número; al llegar, si ya no es la última, <b>se descarta</b>. Prueba con la casilla marcada: siempre gana <b>B</b> (verde).`,
-    `Without the fix it ends showing <b>A</b> (red): the old answer overwrote the new one. With the fix, each search carries a number; on arrival, if it's no longer the latest, it's <b>dropped</b>. Try with the box checked: <b>B</b> always wins (green).`));
+   "El <code>=></code> no solo es más corto: dentro de <code>.map()</code>, <code>.filter()</code> y eventos es lo normal. Lo verás en todas partes.",
+   "<code>=></code> isn't just shorter: inside <code>.map()</code>, <code>.filter()</code> and events it's the norm. You'll see it everywhere."));
+}
+
+function sAsync(p){
+  p.append(h("h2","title","async / await"));
+  p.append(h("p","sub",L("Esperar algo lento sin congelar la página.","Wait for something slow without freezing the page.")));
+  p.append(intro(
+   `<p>Imagina pedir una <b>pizza</b> 🍕: no te quedas parado en la puerta. Sigues con otras cosas y te avisan cuando llega.</p>
+    <p>En JS, pedir datos <b>tarda</b>. <code>await</code> dice "<b>espera</b> a que llegue esto, pero sin bloquear la página". Aquí tienes <code>sleep(ms)</code> para simular algo lento.</p>`,
+   `<p>Picture ordering a <b>pizza</b> 🍕: you don't freeze at the door. You do other things and they call you when it arrives.</p>
+    <p>In JS, fetching data is <b>slow</b>. <code>await</code> means "<b>wait</b> for this, without blocking the page". Here you have <code>sleep(ms)</code> to fake something slow.</p>`));
+  p.append(example(`logT("pido la pizza");
+await sleep(1000);         // espero 1 segundo
+logT("pizza lista 🍕");`,"Mira los milisegundos: hay 1 segundo entre las dos líneas.","Watch the milliseconds: 1 second between the two lines."));
+  p.append(step(t("yourturn"),t("yourturn")));
+  p.append(mission({id:"async-1",n:"1",
+   goalEs:'Haz que imprima <code>listo</code> <b>después</b> de esperar 1 segundo. Añade <code>await sleep(1000);</code> donde falta.',
+   goalEn:'Print <code>listo</code> <b>after</b> waiting 1 second. Add <code>await sleep(1000);</code> where missing.',
+   code:`logT("empiezo");
+/* añade aquí la espera de 1 segundo */
+logT("listo");`,
+   check:ls=>joined(ls).includes("listo")&&maxMs(ls)>=850,
+   hintEs:"Entre las dos líneas: <code>await sleep(1000);</code>",
+   hintEn:"Between the two lines: <code>await sleep(1000);</code>"}));
+  p.append(step(L("Secuencial vs a la vez","Sequential vs at once"),L("Secuencial vs a la vez","Sequential vs at once")));
+  p.append(example(`logT("inicio");
+await sleep(1000);  logT("tarea A");   // una…
+await sleep(1000);  logT("tarea B");   // …y luego la otra
+logT("FIN (~2 s)");`,"Dos esperas seguidas = ~2 segundos.","Two waits in a row = ~2 seconds."));
+  p.append(mission({id:"async-2",n:"2",
+   goalEs:"Si las dos tareas no dependen entre sí, lánzalas <b>a la vez</b> con <code>Promise.all</code> para tardar ~1 s (no 2). Completa el hueco.",
+   goalEn:"If the two tasks don't depend on each other, fire them <b>at once</b> with <code>Promise.all</code> to take ~1 s (not 2). Fill the gap.",
+   code:`logT("inicio");
+await Promise.all([ /* sleep(1000), sleep(1000) */ ]);
+logT("FIN");`,
+   check:ls=>joined(ls).includes("FIN")&&maxMs(ls)>=850&&maxMs(ls)<1500,
+   hintEs:"Dentro del array: <code>sleep(1000), sleep(1000)</code>",
+   hintEn:"Inside the array: <code>sleep(1000), sleep(1000)</code>"}));
+  p.append(swapline());
+  p.append(step(L("El error nº 1: olvidar await","Bug #1: forgetting await"),L("El error nº 1: olvidar await","Bug #1: forgetting await")));
+  p.append(mission({id:"async-3",n:"3",
+   goalEs:"Esto imprime <code>undefined</code> porque falta un <code>await</code>. Añádelo para que imprima <b>Ada</b>.",
+   goalEn:"This prints <code>undefined</code> because an <code>await</code> is missing. Add it so it prints <b>Ada</b>.",
+   code:`const user = getUser();   // ← ¿qué falta aquí?
+log( user.name );`,
+   helpersFn:()=>({getUser:()=>new Promise(r=>setTimeout(()=>r({name:"Ada"}),400))}),
+   check:ls=>joined(ls).includes("Ada"),
+   hintEs:"Hay que <b>esperar</b> la promesa: <code>const user = await getUser();</code>",
+   hintEn:"You must <b>await</b> the promise: <code>const user = await getUser();</code>"}));
+  p.append(callout("warn",
+   "Si ves <code>[object Promise]</code> o <code>undefined</code> al usar datos, casi seguro falta un <code>await</code>.",
+   "If you see <code>[object Promise]</code> or <code>undefined</code> when using data, you're almost certainly missing an <code>await</code>."));
+}
+
+let sandbox;
+function sDom(p){
+  p.append(h("h2","title",L("El DOM","The DOM")));
+  p.append(h("p","sub",L("La página vista por JS: un árbol que puedes cambiar en vivo.","The page as JS sees it: a tree you can change live.")));
+  p.append(intro(
+   `<p>El navegador convierte tu HTML en un <b>árbol</b> de elementos: el <b>DOM</b>. JS no edita el archivo — cambia ese árbol, y la pantalla se actualiza sola.</p>
+    <p>Lo básico:</p>
+    <ul><li><code>root.querySelector("h4")</code> — buscar un elemento</li>
+    <li><code>el.textContent = "..."</code> — cambiar su texto</li>
+    <li><code>el.style.color = "#ff6633"</code> — cambiar su estilo</li>
+    <li><code>el.append(nuevo)</code> — añadir un hijo</li></ul>`,
+   `<p>The browser turns your HTML into a <b>tree</b> of elements: the <b>DOM</b>. JS doesn't edit the file — it changes that tree, and the screen updates by itself.</p>
+    <p>The basics:</p>
+    <ul><li><code>root.querySelector("h4")</code> — find an element</li>
+    <li><code>el.textContent = "..."</code> — change its text</li>
+    <li><code>el.style.color = "#ff6633"</code> — change its style</li>
+    <li><code>el.append(child)</code> — add a child</li></ul>`));
+  sandbox=h("div");sandbox.style.cssText="background:#fff;color:#111;border:1px solid var(--line);border-radius:10px;padding:14px;margin:10px 0";
+  const reset=()=>{sandbox.innerHTML='<h4 style="margin:0 0 6px">Lista de tareas</h4><ul class="todo" style="margin:0;padding-left:20px"><li>Aprender el DOM</li><li>Repasar async</li></ul>';};
+  reset();
+  p.append(h("div","cap",null));
+  p.append(h("p",null,L("👇 Este recuadro es un DOM real. En tu código tienes <code>root</code> (el recuadro). Cambia algo y mira el efecto.","👇 This box is a real DOM. Your code has <code>root</code> (the box). Change something and watch.")));
+  p.append(sandbox);
+  const H=()=>{reset();return {root:sandbox};};
+  p.append(example(`const titulo = root.querySelector("h4");
+titulo.textContent = "¡Mi lista!";
+titulo.style.color = "#ff6633";`,"Cambia el título del recuadro de arriba.","Changes the title of the box above.",H));
+  p.append(step(t("yourturn"),t("yourturn")));
+  p.append(mission({id:"dom-1",n:"1",
+   goalEs:'Cambia el texto del título a exactamente <b>Mi lista</b>.',
+   goalEn:'Change the title text to exactly <b>Mi lista</b>.',
+   code:`const titulo = root.querySelector("h4");
+titulo.textContent = /* "Mi lista" */ ;`,
+   helpersFn:H,check:(ls,c)=>c.root&&c.root.querySelector("h4")&&c.root.querySelector("h4").textContent.trim()==="Mi lista",
+   hintEs:'Pon el texto: <code>titulo.textContent = "Mi lista";</code>',
+   hintEn:'Set the text: <code>titulo.textContent = "Mi lista";</code>'}));
+  p.append(mission({id:"dom-2",n:"2",
+   goalEs:"Pon el título en <b>naranja</b>: <code>style.color = \"#ff6633\"</code>.",
+   goalEn:'Make the title <b>orange</b>: <code>style.color = "#ff6633"</code>.',
+   code:`const titulo = root.querySelector("h4");
+/* ponle color naranja */`,
+   helpersFn:H,check:(ls,c)=>{const e=c.root&&c.root.querySelector("h4");return e&&getComputedStyle(e).color==="rgb(255, 102, 51)";},
+   hintEs:'<code>titulo.style.color = "#ff6633";</code>',
+   hintEn:'<code>titulo.style.color = "#ff6633";</code>'}));
+  p.append(swapline());
+  p.append(mission({id:"dom-3",n:"3",
+   goalEs:"Añade una tarea nueva a la lista con el texto <b>Desplegar en Vercel</b>.",
+   goalEn:"Add a new task to the list with the text <b>Desplegar en Vercel</b>.",
+   code:`const li = document.createElement("li");
+li.textContent = "Desplegar en Vercel";
+/* añádelo a la lista: root.querySelector(".todo"). ??? (li) */`,
+   helpersFn:H,check:(ls,c)=>{const lis=c.root?[...c.root.querySelectorAll("li")]:[];return lis.some(x=>x.textContent.includes("Vercel"))&&lis.length>=3;},
+   hintEs:'Usa append: <code>root.querySelector(".todo").append(li);</code>',
+   hintEn:'Use append: <code>root.querySelector(".todo").append(li);</code>'}));
+  p.append(callout("tip",
+   "El HTML del archivo nunca cambió — solo el árbol en memoria. Por eso, al recargar, se pierde (lo arreglamos con bases de datos más adelante).",
+   "The file's HTML never changed — only the in-memory tree. That's why it's lost on reload (we fix it with databases later)."));
+}
+
+function sSync(p){
+  p.append(h("h2","title",L("Sincronía en el DOM","DOM sync problems")));
+  p.append(h("p","sub",L("Cuando los datos llegan tarde o en desorden, la pantalla se lía.","When data arrives late or out of order, the screen gets confused.")));
+  p.append(intro(
+   `<p>La pantalla se pinta al instante, pero los datos llegan <b>cuando llegan</b>. Esa diferencia de tiempo causa los bugs más confusos. Vamos a verlos con botones (no hay que programar aquí: <b>pulsa, mira y contesta</b>).</p>`,
+   `<p>The screen paints instantly, but data arrives <b>whenever it arrives</b>. That time gap causes the most confusing bugs. Let's see them with buttons (no coding here: <b>click, watch and answer</b>).</p>`));
+  // Demo 1: race
+  p.append(step(L("Bug 1 · Respuestas en desorden","Bug 1 · Out-of-order responses"),""));
+  p.append(h("p",null,L("Un buscador. Pides <b>A</b> (tarda 1,8 s) y enseguida <b>B</b> (0,4 s). B contesta antes… pero la respuesta vieja de A llega después y <b>pisa</b> la de B.","A search box. You ask <b>A</b> (1.8 s) then quickly <b>B</b> (0.4 s). B answers first… but A's old answer arrives later and <b>overwrites</b> B's.")));
+  const d1=h("div","demo");const sc=h("div","screen","—");let seq=0,fix=false;
+  const search=(name,delay)=>{const my=++seq;sc.className="screen";sc.textContent=L("buscando… ","searching… ")+name;
+    setTimeout(()=>{if(fix&&my!==seq)return;sc.textContent=L("Resultado: ","Result: ")+name;sc.className="screen "+(name[0]==="B"?"ok":"bad");},delay);};
+  const sim=h("button","p",L("▶ Simular (A y luego B)","▶ Simulate (A then B)"));
+  sim.onclick=()=>{search("A (lento)",1800);setTimeout(()=>search("B (rápido)",400),250);};
+  const fc=h("label",null,'<input type="checkbox"> '+L("Activar el arreglo (ignorar respuestas viejas)","Enable the fix (ignore stale responses)"));
+  fc.style.cssText="display:flex;gap:7px;align-items:center;font-size:14px";fc.querySelector("input").onchange=e=>fix=e.target.checked;
+  const r1=h("div","row");r1.append(sim);const r2=h("div","row");r2.append(fc);d1.append(r1,r2,sc);p.append(d1);
+  p.append(quiz({id:"sync-1",n:"1",
+   qEs:'Pulsa <b>Simular</b> (sin marcar el arreglo). ¿Qué resultado final aparece?',
+   qEn:'Press <b>Simulate</b> (fix unchecked). What final result appears?',
+   opts:[{es:"A (lento) — en rojo ❌",en:"A (slow) — red ❌"},{es:"B (rápido) — en verde ✅",en:"B (fast) — green ✅"}],
+   correct:0,
+   expEs:"Exacto: la respuesta vieja de A llegó después y pisó la de B. <b>Arreglo:</b> cada petición lleva un número; al llegar, si ya no es la última, se descarta. Marca la casilla y vuelve a simular: ahora gana B. 🔄 Cambiad de piloto.",
+   expEn:"Right: A's old answer arrived later and overwrote B's. <b>Fix:</b> each request carries a number; on arrival, if it's not the latest, it's dropped. Check the box and simulate again: now B wins. 🔄 Swap driver."}));
   p.append(showCode(`let ultima = 0;
 function buscar(texto){
-  const miId = ++ultima;                 // cada petición, un número
-  pantalla.textContent = "buscando…";
-  pedirAlServidor(texto).then(res => {
-    if (miId !== ultima) return;         // ← llegó tarde y ya no es la última: descartar
-    pantalla.textContent = res;          // solo pinta la respuesta MÁS reciente
+  const miId = ++ultima;
+  pedir(texto).then(res => {
+    if (miId !== ultima) return;   // ← llegó tarde: descartar
+    pantalla.textContent = res;    // pinta solo la MÁS reciente
   });
 }`));
-
-  // DEMO B: update before data
-  p.append(head(lang==="es"?"Bug 2 · Pintar antes de tener el dato":"Bug 2 · Painting before the data arrives"));
-  p.append(card(
-    `<p>Otro clásico: lanzáis la petición y pintáis <b>en la línea siguiente</b>, sin esperar. El dato aún no está → sale <code>undefined</code> o vacío. La solución: mostrar <b>"Cargando…"</b> y pintar <b>dentro</b> del <code>await</code>/<code>.then()</code>.</p>`,
-    `<p>Another classic: you fire the request and paint <b>on the next line</b>, without waiting. The data isn't there yet → you get <code>undefined</code> or blank. The fix: show <b>"Loading…"</b> and paint <b>inside</b> the <code>await</code>/<code>.then()</code>.</p>`));
-  const dB=h("div","demo");const scrB=h("div","screen","—");
-  const getUser=()=>new Promise(r=>setTimeout(()=>r({name:"Ada Lovelace"}),900));
-  const bBad=h("button",null,lang==="es"?"❌ Cargar (mal)":"❌ Load (wrong)");
-  const bGood=h("button","p",lang==="es"?"✅ Cargar (bien)":"✅ Load (right)");
-  bBad.onclick=()=>{let user;getUser().then(u=>user=u);scrB.className="screen bad";scrB.textContent="Nombre: "+(user&&user.name);};
-  bGood.onclick=async()=>{scrB.className="screen";scrB.textContent=lang==="es"?"Cargando…":"Loading…";const u=await getUser();scrB.className="screen ok";scrB.textContent="Nombre: "+u.name;};
-  const rowB=h("div","row");rowB.append(bBad,bGood);dB.append(rowB,scrB);p.append(dB);
-  p.append(callout("warn",
-    `"Mal" muestra <code>Nombre: undefined</code>: pintó antes de que la promesa se cumpliera. "Bien" muestra <b>Cargando…</b> y luego el nombre. Esos tres estados — <b>cargando / dato / error</b> — hay que diseñarlos SIEMPRE.`,
-    `"Wrong" shows <code>Name: undefined</code>: it painted before the promise resolved. "Right" shows <b>Loading…</b> then the name. Those three states — <b>loading / data / error</b> — must ALWAYS be designed.`));
-  p.append(callout("task",
-    `Discutid y anotad: ¿qué tercer estado falta en el botón "bien"? (pista: ¿y si el servidor falla?). ¿Cómo lo mostraríais? 🔄 Cambiad de piloto.`,
-    `Discuss and note: what third state is missing in the "right" button? (hint: what if the server fails?). How would you show it? 🔄 Swap driver.`));
+  // Demo 2: before data
+  p.append(step(L("Bug 2 · Pintar antes de tener el dato","Bug 2 · Painting before the data"),""));
+  p.append(h("p",null,L("Lanzas la petición y pintas en la línea siguiente, sin esperar. El dato aún no está → <code>undefined</code>.","You fire the request and paint on the next line, without waiting. The data isn't there yet → <code>undefined</code>.")));
+  const d2=h("div","demo");const sc2=h("div","screen","—");
+  const getU=()=>new Promise(r=>setTimeout(()=>r({name:"Ada Lovelace"}),900));
+  const bad=h("button",null,L("❌ Cargar (mal)","❌ Load (wrong)")),good=h("button","p",L("✅ Cargar (bien)","✅ Load (right)"));
+  bad.onclick=()=>{let u;getU().then(x=>u=x);sc2.className="screen bad";sc2.textContent="Nombre: "+(u&&u.name);};
+  good.onclick=async()=>{sc2.className="screen";sc2.textContent=L("Cargando…","Loading…");const u=await getU();sc2.className="screen ok";sc2.textContent="Nombre: "+u.name;};
+  const r3=h("div","row");r3.append(bad,good);d2.append(r3,sc2);p.append(d2);
+  p.append(quiz({id:"sync-2",n:"2",
+   qEs:'¿Qué muestra el botón <b>"Cargar (mal)"</b>?',
+   qEn:'What does the <b>"Load (wrong)"</b> button show?',
+   opts:[{es:"El nombre correcto",en:"The correct name"},{es:"Nombre: undefined",en:"Name: undefined"},{es:"Un error rojo",en:"A red error"}],
+   correct:1,
+   expEs:'Pintó <b>antes</b> de que la promesa se cumpliera. El botón "bien" muestra <b>Cargando…</b> y luego el nombre. Diseña siempre tres estados: <b>cargando / dato / error</b>.',
+   expEn:'It painted <b>before</b> the promise resolved. The "right" button shows <b>Loading…</b> then the name. Always design three states: <b>loading / data / error</b>.'}));
 }
 
-// ---- LOCAL DB ----
-function mLocal(p){
-  p.append(h("h2","title",lang==="es"?"Base de datos local · IndexedDB":"Local database · IndexedDB"));
-  p.append(h("p","sub",lang==="es"?"Guardar datos en el propio navegador — que sobrevivan al recargar.":"Store data in the browser itself — surviving a reload."));
-  p.append(card(
-    `<p>El navegador trae su propia base de datos: <b>IndexedDB</b>. Vive en <b>este</b> equipo y navegador, no necesita servidor, y <b>persiste</b> aunque cierres la pestaña. Perfecta para borradores, ajustes o modo sin conexión.</p>
-     <p>Abajo hay una mini-app de notas <b>real</b>, guardada en IndexedDB. Añade notas y <b>recarga la página</b>: siguen ahí.</p>`,
-    `<p>The browser ships its own database: <b>IndexedDB</b>. It lives on <b>this</b> device and browser, needs no server, and <b>persists</b> even if you close the tab. Great for drafts, settings or offline mode.</p>
-     <p>Below is a <b>real</b> notes mini-app, stored in IndexedDB. Add notes and <b>reload the page</b>: they're still there.</p>`));
-  const d=h("div","demo");
-  const inp=h("input");inp.placeholder=lang==="es"?"escribe una nota…":"type a note…";
-  inp.style.cssText="flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--fg);font-size:14px";
-  const add=h("button","p",lang==="es"?"➕ Añadir":"➕ Add");
-  const clr=h("button",null,lang==="es"?"🗑️ Vaciar":"🗑️ Clear");
+function sLocal(p){
+  p.append(h("h2","title",L("Base de datos local · IndexedDB","Local database · IndexedDB")));
+  p.append(h("p","sub",L("Guardar datos en el navegador — que no se pierdan al recargar.","Store data in the browser — so it survives a reload.")));
+  p.append(intro(
+   `<p>El navegador trae su propia base de datos: <b>IndexedDB</b>. Vive en <b>este</b> equipo, no necesita servidor y <b>persiste</b> aunque cierres la pestaña.</p>
+    <p>Abajo hay una mini-app de notas <b>real</b>. Añade una y <b>recarga la página</b>: seguirá ahí. 👇</p>`,
+   `<p>The browser ships its own database: <b>IndexedDB</b>. It lives on <b>this</b> device, needs no server and <b>persists</b> even if you close the tab.</p>
+    <p>Below is a <b>real</b> notes mini-app. Add one and <b>reload the page</b>: it'll still be there. 👇</p>`));
+  const d=h("div","demo");const inp=h("input");inp.placeholder=L("escribe una nota…","type a note…");
+  inp.style.cssText="flex:1;min-width:150px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--fg);font-size:14px";
+  const add=h("button","p",L("➕ Añadir","➕ Add")),clr=h("button",null,L("🗑️ Vaciar","🗑️ Clear"));
   const list=h("ul");list.style.cssText="margin:10px 0 0;padding-left:20px";
   const row=h("div","row");row.append(inp,add,clr);d.append(row,list);p.append(d);
-  let db;
-  const open=()=>new Promise((res,rej)=>{const r=indexedDB.open("notasDB",1);
-    r.onupgradeneeded=e=>{e.target.result.createObjectStore("notas",{keyPath:"id",autoIncrement:true});};
-    r.onsuccess=e=>res(e.target.result);r.onerror=e=>rej(e);});
-  const render=async()=>{list.innerHTML="";const tx=db.transaction("notas");const st=tx.objectStore("notas");
-    const all=await new Promise(r=>{const q=st.getAll();q.onsuccess=()=>r(q.result);});
-    if(!all.length){list.innerHTML="<li style='color:var(--muted);list-style:none'>"+(lang==="es"?"(sin notas — añade una y recarga)":"(no notes — add one and reload)")+"</li>";return;}
-    all.forEach(n=>{const li=h("li");li.textContent=n.texto;list.append(li);});};
-  add.onclick=async()=>{const v=inp.value.trim();if(!v)return;const tx=db.transaction("notas","readwrite");
-    tx.objectStore("notas").add({texto:v});tx.oncomplete=render;inp.value="";inp.focus();};
+  let db;const open=()=>new Promise((res,rej)=>{const r=indexedDB.open("notasDB",1);
+    r.onupgradeneeded=e=>e.target.result.createObjectStore("notas",{keyPath:"id",autoIncrement:true});
+    r.onsuccess=e=>res(e.target.result);r.onerror=rej;});
+  const render=()=>{const st=db.transaction("notas").objectStore("notas").getAll();st.onsuccess=()=>{list.innerHTML="";
+    if(!st.result.length){list.innerHTML="<li style='color:var(--muted);list-style:none'>"+L("(sin notas — añade una)","(no notes — add one)")+"</li>";return;}
+    st.result.forEach(n=>list.append(h("li",null,n.texto)));};};
+  add.onclick=()=>{const v=inp.value.trim();if(!v||!db)return;const tx=db.transaction("notas","readwrite");tx.objectStore("notas").add({texto:v});tx.oncomplete=render;inp.value="";inp.focus();};
   inp.addEventListener("keydown",e=>{if(e.key==="Enter")add.onclick();});
-  clr.onclick=async()=>{const tx=db.transaction("notas","readwrite");tx.objectStore("notas").clear();tx.oncomplete=render;};
-  open().then(x=>{db=x;render();}).catch(()=>{list.innerHTML="<li>IndexedDB no disponible aquí.</li>";});
-  p.append(showCode(`// Abrir / crear la base de datos
-const req = indexedDB.open("notasDB", 1);
+  clr.onclick=()=>{if(!db)return;const tx=db.transaction("notas","readwrite");tx.objectStore("notas").clear();tx.oncomplete=render;};
+  open().then(x=>{db=x;render();}).catch(()=>list.innerHTML="<li>IndexedDB no disponible.</li>");
+  p.append(showCode(`const req = indexedDB.open("notasDB", 1);
 req.onupgradeneeded = e => e.target.result
-    .createObjectStore("notas", { keyPath:"id", autoIncrement:true });
-
-// Guardar una nota
-const tx = db.transaction("notas", "readwrite");
-tx.objectStore("notas").add({ texto: "mi nota" });
-
-// Leerlas todas
-db.transaction("notas").objectStore("notas").getAll()
-  .onsuccess = e => render(e.target.result);`));
-  p.append(callout("discuss",
-    `IndexedDB guarda en <b>este</b> navegador. Si abres la app en tu móvil, ¿están tus notas? ¿Y si otro alumno abre la misma URL? ¿Qué limitación os sugiere eso… y qué necesitaríais para compartir datos entre dispositivos?`,
-    `IndexedDB saves in <b>this</b> browser. If you open the app on your phone, are your notes there? And if another student opens the same URL? What limitation does that suggest… and what would you need to share data across devices?`));
+   .createObjectStore("notas", { keyPath:"id", autoIncrement:true });
+// guardar:
+db.transaction("notas","readwrite").objectStore("notas").add({ texto:"hola" });`));
+  p.append(step(t("yourturn"),t("yourturn")));
+  p.append(quiz({id:"local-1",n:"1",
+   qEs:"Añade una nota y <b>recarga la página</b>. ¿Sigue ahí?",
+   qEn:"Add a note and <b>reload the page</b>. Is it still there?",
+   opts:[{es:"Sí, sigue ahí ✅",en:"Yes, still there ✅"},{es:"No, se borró",en:"No, it's gone"}],
+   correct:0,
+   expEs:"¡Eso es IndexedDB! Los datos <b>persisten</b> en este navegador aunque recargues o cierres la pestaña.",
+   expEn:"That's IndexedDB! Data <b>persists</b> in this browser even if you reload or close the tab."}));
+  p.append(quiz({id:"local-2",n:"2",
+   qEs:"Si tu compañero abre la MISMA URL en SU portátil, ¿ve tus notas?",
+   qEn:"If your partner opens the SAME URL on THEIR laptop, do they see your notes?",
+   opts:[{es:"Sí, se comparten",en:"Yes, shared"},{es:"No: cada navegador guarda las suyas",en:"No: each browser keeps its own"}],
+   correct:1,
+   expEs:"IndexedDB es <b>local</b>: solo en este navegador. Para compartir datos entre personas/dispositivos hace falta la <b>nube</b> → siguiente estación. 🔄 Cambiad de piloto.",
+   expEn:"IndexedDB is <b>local</b>: only this browser. To share data across people/devices you need the <b>cloud</b> → next station. 🔄 Swap driver."}));
 }
 
-// ---- CLOUD DB ----
-function mCloud(p){
-  p.append(h("h2","title",lang==="es"?"Base de datos en la nube":"Cloud database"));
-  p.append(h("p","sub",lang==="es"?"Datos que viven en un servidor y se comparten entre todos — y por qué hace falta un backend.":"Data living on a server, shared by everyone — and why a backend is needed."));
-  p.append(card(
-    `<p>Para que los datos se compartan entre dispositivos y personas, tienen que vivir <b>en la nube</b>. La app los pide por la red con <code>fetch</code> y llegan de forma <b>asíncrona</b> (lo de la estación de async/await, ahora de verdad).</p>
-     <p>Abajo, una llamada <b>en vivo</b> a una API pública. Pulsa el botón y mira cómo llegan datos remotos — con sus estados <b>cargando / datos / error</b>.</p>`,
-    `<p>For data to be shared across devices and people, it must live <b>in the cloud</b>. The app requests it over the network with <code>fetch</code>, and it arrives <b>asynchronously</b> (the async/await station, now for real).</p>
-     <p>Below, a <b>live</b> call to a public API. Press the button and watch remote data arrive — with its <b>loading / data / error</b> states.</p>`));
-  const d=h("div","demo");const scr=h("div","screen","—");
-  const go=h("button","p",lang==="es"?"☁️ Traer usuarios de la nube":"☁️ Fetch users from the cloud");
-  go.onclick=async()=>{scr.className="screen";scr.innerHTML=lang==="es"?"⏳ Cargando…":"⏳ Loading…";
-    try{
-      const res=await fetch("https://jsonplaceholder.typicode.com/users");
-      if(!res.ok) throw new Error("HTTP "+res.status);
-      const users=await res.json();
-      scr.className="screen ok";
-      scr.innerHTML="<b>"+users.length+(lang==="es"?" usuarios recibidos:</b><br>":" users received:</b><br>")+
-        users.slice(0,5).map(u=>"• "+u.name+" — "+u.email).join("<br>")+"<br>…";
-    }catch(e){scr.className="screen bad";scr.innerHTML="⛔ "+(lang==="es"?"Error de red: ":"Network error: ")+e.message;}
-  };
-  d.append(h("div","row",null),scr);d.querySelector(".row").append(go);p.append(d);
-  p.append(showCode(`async function traerUsuarios(){
-  pantalla.textContent = "Cargando…";                  // estado 1
-  try {
-    const res = await fetch("https://.../users");       // pedir a la nube
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const users = await res.json();                     // estado 2: datos
-    pintar(users);
-  } catch (e) {
-    pantalla.textContent = "Error: " + e.message;        // estado 3: error
-  }
-}`));
-  p.append(head(lang==="es"?"¿Y una base de datos de verdad? El patrón Supabase":"A real database? The Supabase pattern"));
-  p.append(card(
-    `<p>Servicios como <b>Supabase</b> o <b>Firebase</b> te dan una base de datos en la nube con un cliente para el navegador. Se usa casi igual que lo de arriba:</p>`,
-    `<p>Services like <b>Supabase</b> or <b>Firebase</b> give you a cloud database with a browser client. It's used almost like above:</p>`));
+function sCloud(p){
+  p.append(h("h2","title",L("Base de datos en la nube","Cloud database")));
+  p.append(h("p","sub",L("Datos en un servidor, compartidos por todos — y por qué hace falta un backend.","Data on a server, shared by everyone — and why a backend is needed.")));
+  p.append(intro(
+   `<p>Para compartir datos entre personas, deben vivir <b>en la nube</b>. La app los pide por internet con <code>fetch</code> y llegan de forma <b>asíncrona</b> (el <code>await</code> de antes, ahora de verdad).</p>
+    <p>Pulsa el botón: es una llamada <b>en vivo</b> a una API pública. 👇</p>`,
+   `<p>To share data across people, it must live <b>in the cloud</b>. The app fetches it over the internet with <code>fetch</code>, arriving <b>asynchronously</b> (the earlier <code>await</code>, now for real).</p>
+    <p>Press the button: it's a <b>live</b> call to a public API. 👇</p>`));
+  const d=h("div","demo");const sc=h("div","screen","—");
+  const go=h("button","p",L("☁️ Traer usuarios de la nube","☁️ Fetch users from the cloud"));
+  go.onclick=async()=>{sc.className="screen";sc.textContent=L("⏳ Cargando…","⏳ Loading…");
+    try{const r=await fetch("https://jsonplaceholder.typicode.com/users");if(!r.ok)throw new Error("HTTP "+r.status);
+      const u=await r.json();sc.className="screen ok";
+      sc.innerHTML="<b>"+u.length+L(" usuarios recibidos:</b><br>"," users received:</b><br>")+u.slice(0,5).map(x=>"• "+x.name+" — "+x.email).join("<br>")+"<br>…";
+      award("cloud-1");}
+    catch(e){sc.className="screen bad";sc.textContent="⛔ "+e.message;}};
+  const r=h("div","row");r.append(go);d.append(r,sc);p.append(d);
+  p.append(h("p",null,L("(Al traer los datos ganas tu ⭐ de esta estación.)","(Fetching the data earns your ⭐ for this station.)")));
+  p.append(step(L("Y una BBDD de verdad: el patrón Supabase","A real DB: the Supabase pattern"),""));
   p.append(showCode(`import { createClient } from "@supabase/supabase-js";
-
-// URL pública + 'anon key' (clave PÚBLICA, pensada para el navegador)
 const db = createClient("https://TU-PROYECTO.supabase.co", "ANON_KEY_PUBLICA");
-
-// Leer filas de una tabla
-const { data } = await db.from("notas").select("*");
-
-// Insertar una fila
-await db.from("notas").insert({ texto: "hola nube" });`));
+const { data } = await db.from("notas").select("*");   // leer
+await db.from("notas").insert({ texto: "hola nube" });  // escribir`));
   p.append(callout("warn",
-    `<b>La verdad importante:</b> una página web <b>no puede</b> guardar la contraseña secreta de la base de datos — cualquiera vería el código. Por eso la <code>anon key</code> es <b>pública</b> y limitada, y la seguridad real la pone el servidor (reglas por filas, o un <b>backend</b> propio). <b>Esto es exactamente lo que vais a construir a continuación.</b>`,
-    `<b>The key truth:</b> a web page <b>can't</b> hold the database's secret password — anyone could read the code. That's why the <code>anon key</code> is <b>public</b> and limited, and real security lives on the server (row-level rules, or your own <b>backend</b>). <b>This is exactly what you'll build next.</b>`));
-  p.append(callout("task",
-    `Comparad las tres estaciones de datos: el <b>DOM</b> (se pierde al recargar), <b>IndexedDB</b> (local, persiste pero no se comparte) y la <b>nube</b> (compartida, necesita servidor/reglas). Haced una tabla de 3 columnas: ¿cuándo usaríais cada una? 🔄 Último cambio de piloto.`,
-    `Compare the three data stations: the <b>DOM</b> (lost on reload), <b>IndexedDB</b> (local, persists but not shared) and the <b>cloud</b> (shared, needs server/rules). Make a 3-column table: when would you use each? 🔄 Final driver swap.`));
+   "Una web <b>no puede</b> guardar la contraseña secreta de la BBDD: cualquiera vería el código. Por eso la <code>anon key</code> es <b>pública</b> y limitada, y la seguridad real la pone el <b>servidor</b> (reglas por filas o un backend propio). <b>Eso es lo que vais a construir ahora.</b>",
+   "A web page <b>can't</b> hold the DB's secret password: anyone could read the code. That's why the <code>anon key</code> is <b>public</b> and limited, and real security lives on the <b>server</b> (row rules or your own backend). <b>That's what you'll build next.</b>"));
+  p.append(quiz({id:"cloud-2",n:"2",
+   qEs:"¿Por qué NO se pone la contraseña secreta de la base de datos en el código del navegador?",
+   qEn:"Why do we NOT put the database's secret password in the browser code?",
+   opts:[{es:"Porque cualquiera vería el código y la robaría",en:"Because anyone could read the code and steal it"},{es:"Porque ocupa mucho",en:"Because it's too big"},{es:"Porque es más lento",en:"Because it's slower"}],
+   correct:0,
+   expEs:"Exacto. El código del navegador es público. Por eso la BBDD se protege en el <b>servidor</b> — el backend que empezáis ahora. 🔄 Último cambio de piloto.",
+   expEn:"Exactly. Browser code is public. That's why the DB is protected on the <b>server</b> — the backend you start now. 🔄 Final driver swap."}));
 }
 
-// ---------------- render / nav ----------------
-function buildSide(){
-  const side=$("#side");side.innerHTML="";
-  STATIONS.forEach((s,i)=>{const b=h("button","lv"+(i===cur?" active":""));
-    b.innerHTML='<span class="ic">'+s.ic+'</span><span class="txt">'+s.name[lang]+'</span>';
-    b.onclick=()=>go(i);side.append(b);});
+// ---------------- render ----------------
+function updateStars(){
+  const done=ALL.filter(id=>solved.has(id)).length;
+  $("#scount").textContent=done+"/"+ALL.length;$("#sbar").style.width=(done/ALL.length*100)+"%";
+  [...document.querySelectorAll(".side .lv")].forEach((b,i)=>{const s=ST[i];
+    const n=s.stars.filter(id=>solved.has(id)).length;b.classList.toggle("done",s.stars.length>0&&n===s.stars.length);
+    const stEl=b.querySelector(".st");if(stEl)stEl.textContent=s.stars.length?n+"/"+s.stars.length:"";});
 }
-function go(i){cur=Math.max(0,Math.min(STATIONS.length-1,i));localStorage.setItem("jsbackStation",cur);render();}
+function buildSide(){const side=$("#side");side.innerHTML="";ST.forEach((s,i)=>{const b=h("button","lv"+(i===cur?" active":""));
+  b.innerHTML='<span class="ic">'+s.ic+'</span><span class="txt">'+s.name[lang]+'</span><span class="st"></span>';
+  b.onclick=()=>go(i);side.append(b);});updateStars();}
+function go(i){cur=Math.max(0,Math.min(ST.length-1,i));localStorage.setItem("jsbackStation",cur);render();}
 function render(){
-  buildSide();
-  const play=$("#play");play.innerHTML="";play.scrollTop=0;
-  STATIONS[cur].build(play);
-  const nav=h("div","nav2");
-  const prev=h("button","prev",t("prev")),next=h("button","next",t("next"));
-  prev.disabled=cur===0;next.disabled=cur===STATIONS.length-1;
-  prev.onclick=()=>go(cur-1);next.onclick=()=>go(cur+1);
-  nav.append(prev,next);play.append(nav);
-  play.append(h("div","foot","De JS a Backend · Sistemas Web · Universidad San Jorge"));
-  // pair bar labels
+  buildSide();const play=$("#play");play.innerHTML="";play.scrollTop=0;ST[cur].build(play);
+  const nav=h("div","nav2");const pv=h("button","prev",t("prev")),nx=h("button","next",t("next"));
+  pv.disabled=cur===0;nx.disabled=cur===ST.length-1;pv.onclick=()=>go(cur-1);nx.onclick=()=>go(cur+1);
+  nav.append(pv,nx);play.append(nav);play.append(h("div","foot","De JS a Backend · Sistemas Web · Universidad San Jorge"));
   $("#pairLead").textContent=t("lead");$("#pLabel").textContent=t("pilot");$("#cLabel").textContent=t("copilot");
   $("#swapLabel").textContent=t("swap");$("#pairTip").textContent=t("pairtip");$("#brandsub").textContent=t("sub");
-  $("#es").classList.toggle("on",lang==="es");$("#en").classList.toggle("on",lang==="en");
-  document.documentElement.lang=lang;
+  $("#es").classList.toggle("on",lang==="es");$("#en").classList.toggle("on",lang==="en");document.documentElement.lang=lang;
 }
-// language
 function setLang(l){lang=l;localStorage.setItem("jsbackLang",l);render();}
 $("#es").onclick=()=>setLang("es");$("#en").onclick=()=>setLang("en");
-// theme
-const root=document.documentElement;
-try{const th=localStorage.getItem("jsbackTheme");if(th)root.setAttribute("data-theme",th);}catch(e){}
-$("#theme").onclick=()=>{const d=root.getAttribute("data-theme")==="dark"||(!root.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme:dark)").matches);
-  const n=d?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("jsbackTheme",n);}catch(e){}};
-// pair names + swap
+const root=document.documentElement;try{const th=localStorage.getItem("jsbackTheme");if(th)root.setAttribute("data-theme",th);}catch(e){}
+$("#theme").onclick=()=>{const d=root.getAttribute("data-theme")==="dark"||(!root.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme:dark)").matches);const n=d?"light":"dark";root.setAttribute("data-theme",n);try{localStorage.setItem("jsbackTheme",n);}catch(e){}};
 const pilot=$("#pilot"),copilot=$("#copilot");
 try{pilot.value=localStorage.getItem("jsbackPilot")||"";copilot.value=localStorage.getItem("jsbackCopilot")||"";}catch(e){}
-pilot.oninput=()=>localStorage.setItem("jsbackPilot",pilot.value);
-copilot.oninput=()=>localStorage.setItem("jsbackCopilot",copilot.value);
-$("#swap").onclick=()=>{const a=pilot.value;pilot.value=copilot.value;copilot.value=a;pilot.oninput();copilot.oninput();
-  $("#swap").textContent="🔄 ✓";setTimeout(()=>$("#swap").innerHTML='🔄 <span id="swapLabel">'+t("swap")+'</span>',700);};
-// start
+pilot.oninput=()=>localStorage.setItem("jsbackPilot",pilot.value);copilot.oninput=()=>localStorage.setItem("jsbackCopilot",copilot.value);
+$("#swap").onclick=()=>{const a=pilot.value;pilot.value=copilot.value;copilot.value=a;pilot.oninput();copilot.oninput();toast(t("swapmsg"));};
 try{cur=+localStorage.getItem("jsbackStation")||0;}catch(e){}
 render();
 </script>
